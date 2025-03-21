@@ -97,22 +97,97 @@
   </div>
   <div class="card-datatable table-responsive">
     <table class="datatables-products table">
-      <thead class="border-top">
-        <tr>
-          <th></th>
-          <th></th>
-          <th>product</th>
-          <th>category</th>
-          <th>stock</th>
-          <th>sku</th>
-          <th>price</th>
-          <th>qty</th>
-          <th>status</th>
-          <th>actions</th>
-        </tr>
-      </thead>
+        <thead class="border-top">
+            <tr>
+                <th></th>
+                <th></th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>SKU</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($products as $product)
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="d-flex justify-content-start align-items-center product-name">
+                            <div class="avatar-wrapper">
+                                <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="Product-{{ $product->id }}" class="rounded-2">
+                                    @else
+                                        <span class="avatar-initial rounded-2 bg-label-primary">{{ substr($product->name, 0, 2) }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h6 class="text-nowrap mb-0">{{ $product->name }}</h6>
+                                <small class="text-truncate d-none d-sm-block">{{ $product->description }}</small> <!-- Replace with actual brand if available -->
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-truncate d-flex align-items-center text-heading">
+                            {{ $product->category ? $product->category->name : 'Uncategorized' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-truncate">
+                            @if ($product->stock > 0)
+                                <label class="switch switch-primary switch-sm">
+                                    <input type="checkbox" class="switch-input" checked="">
+                                    <span class="switch-toggle-slider">
+                                        <span class="switch-on"></span>
+                                    </span>
+                                </label>
+                            @else
+                                <label class="switch switch-primary switch-sm">
+                                    <input type="checkbox" class="switch-input">
+                                    <span class="switch-toggle-slider">
+                                        <span class="switch-off"></span>
+                                    </span>
+                                </label>
+                            @endif
+                        </span>
+                    </td>
+                    <td>{{ $product->sku }}</td>
+                    <td>{{ $product->price }}</td>
+                    <td>{{ $product->stock }}</td>
+                    <td>
+                        @if ($product->status === 'Publié')
+                            <span class="badge bg-label-success">Publish</span>
+                        @elseif ($product->status === 'Planifié')
+                            <span class="badge bg-label-warning">Scheduled</span>
+                        @else
+                            <span class="badge bg-label-danger">Inactive</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="d-inline-block text-nowrap">
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+                                <i class="ti ti-edit ti-md"></i>
+                            </button>
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <i class="ti ti-dots-vertical ti-md"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end m-0">
+                                <a href="javascript:void(0);" class="dropdown-item">View</a>
+                                <a href="javascript:void(0);" class="dropdown-item">Suspend</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
     </table>
-  </div>
+</div>
 </div>
 
 @endsection

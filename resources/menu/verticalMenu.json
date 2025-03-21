@@ -12,12 +12,12 @@
       "slug": "app-ecommerce-product",
       "submenu": [
         {
-          "url": "app/ecommerce/product/list",
+          "url": "/products",
           "name": "Product List",
           "slug": "app-ecommerce-product-list"
         },
         {
-          "url": "app/ecommerce/product/add",
+          "url": "/product-add",
           "name": "Add Product",
           "slug": "app-ecommerce-product-add"
         },

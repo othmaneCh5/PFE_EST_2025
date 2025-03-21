@@ -30,6 +30,7 @@ use App\Http\Controllers\charts\ApexCharts;
 use App\Http\Controllers\icons\FontAwesome;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\pages\UserProfile;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\apps\AcademyCourse;
 use App\Http\Controllers\extended_ui\Avatar;
 use App\Http\Controllers\layouts\Horizontal;
@@ -163,6 +164,10 @@ use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
 
 //test
 Route::get('/dash', [TestController::class, 'index'])->name('dashboard-test');
+///products
+Route::get('/products', [ProductController::class, 'index'])->name('product-list');
+Route::get('/product-add', [ProductController::class, 'open_add_product'])->name('product-add');
+Route::post('/add_product' , [ProductController::class , 'add']);
 
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
@@ -199,8 +204,6 @@ Route::get('/app/chat', [Chat::class, 'index'])->name('app-chat');
 Route::get('/app/calendar', [Calendar::class, 'index'])->name('app-calendar');
 Route::get('/app/kanban', [Kanban::class, 'index'])->name('app-kanban');
 Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
-Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
-Route::get('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'index'])->name('app-ecommerce-product-add');
 Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
 Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
 Route::get('/app/ecommerce/order/details', [EcommerceOrderDetails::class, 'index'])->name('app-ecommerce-order-details');
