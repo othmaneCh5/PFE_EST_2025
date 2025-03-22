@@ -32,6 +32,7 @@ use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\pages\UserProfile;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\apps\AcademyCourse;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\extended_ui\Avatar;
 use App\Http\Controllers\layouts\Horizontal;
 use App\Http\Controllers\layouts\NavbarFull;
@@ -164,10 +165,19 @@ use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
 
 //test
 Route::get('/dash', [TestController::class, 'index'])->name('dashboard-test');
-///products
+
+//products
 Route::get('/products', [ProductController::class, 'index'])->name('product-list');
 Route::get('/product-add', [ProductController::class, 'open_add_product'])->name('product-add');
 Route::post('/add_product' , [ProductController::class , 'add']);
+Route::put('/products/{id}', [ProductController::class, 'edit'])->name('products.update');
+Route::get('/delete_product', [ProductController::class, 'delete']);
+
+//product categories
+Route::get('/product-categories', [CategoryController::class, 'index'])->name('product-categories');
+Route::post('/add_category' , [CategoryController::class , 'add']);
+Route::post('/edit_category/{id}', [CategoryController::class, 'update']);
+Route::get('/delete_category', [CategoryController::class, 'delete']);
 
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
@@ -204,7 +214,6 @@ Route::get('/app/chat', [Chat::class, 'index'])->name('app-chat');
 Route::get('/app/calendar', [Calendar::class, 'index'])->name('app-calendar');
 Route::get('/app/kanban', [Kanban::class, 'index'])->name('app-kanban');
 Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
-Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
 Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
 Route::get('/app/ecommerce/order/details', [EcommerceOrderDetails::class, 'index'])->name('app-ecommerce-order-details');
 Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');

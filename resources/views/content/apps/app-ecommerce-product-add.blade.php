@@ -131,9 +131,9 @@
                               </label>
                               <select name="category" id="category-org" class="select2 form-select" data-placeholder="Select Category">
                                   <option value="">Select Category</option>
-                                  {{-- @foreach($categories as $category)
+                                  @foreach($categories as $category)
                                       <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                  @endforeach --}}
+                                  @endforeach 
                               </select>
                           </div>
                           <a href="javascript:void(0);" class="fw-medium btn btn-icon btn-label-primary ms-4"><i class='ti ti-plus ti-md'></i></a>

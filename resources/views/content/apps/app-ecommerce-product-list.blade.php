@@ -87,13 +87,19 @@
 
 <!-- Product List Table -->
 <div class="card">
-  <div class="card-header">
-    <h5 class="card-title">Filter</h5>
-    <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title">Products</h5>
+    {{-- <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
       <div class="col-md-4 product_status"></div>
       <div class="col-md-4 product_category"></div>
       <div class="col-md-4 product_stock"></div>
-    </div>
+    </div> --}}
+    <a href="/product-add">
+      <button type="button" class="btn btn-primary" > 
+      <i class="ti ti-plus me-1"></i> Add Product
+      </button>
+    </a>
+    
   </div>
   <div class="card-datatable table-responsive">
     <table class="datatables-products table">
@@ -169,18 +175,102 @@
                             <span class="badge bg-label-danger">Inactive</span>
                         @endif
                     </td>
+                    <script>
+                      document.addEventListener('DOMContentLoaded', function () {
+                      // Add event listeners to all edit buttons
+                      document.querySelectorAll('.edit-product-btn').forEach(button => {
+                        button.addEventListener('click', function () {
+                          // Get the product data from data attributes
+                          const productId = button.getAttribute('data-product-id');
+                          const productName = button.getAttribute('data-product-name');
+                          const productDescription = button.getAttribute('data-product-description');
+                          const productSku = button.getAttribute('data-product-sku');
+                          const productBarcode = button.getAttribute('data-product-barcode');
+                          const productPrice = button.getAttribute('data-product-price');
+                          const productCategoryId = button.getAttribute('data-product-category-id');
+                          const productStatus = button.getAttribute('data-product-status');
+                          const productImage = button.getAttribute('data-product-image');
+
+                          // Update the form action URL
+                          const form = document.getElementById('editProductForm');
+                          form.action = `/products/${productId}`;
+
+                          // Populate the form fields
+                          document.getElementById('edit-product-name').value = productName;
+                          document.getElementById('edit-product-description').value = productDescription;
+                          document.getElementById('edit-product-sku').value = productSku;
+                          document.getElementById('edit-product-barcode').value = productBarcode;
+                          document.getElementById('edit-product-price').value = productPrice;
+                          document.getElementById('edit-product-category').value = productCategoryId;
+                          document.getElementById('edit-product-status').value = productStatus;
+
+                          // Update the image preview
+                          const imagePreview = document.getElementById('edit-product-image-preview');
+                          if (productImage) {
+                            imagePreview.src = `/storage/${productImage}`;
+                            imagePreview.style.display = 'block';
+                          } else {
+                            imagePreview.style.display = 'none';
+                          }
+                        });
+                      });
+                    });
+                    </script>
                     <td>
                         <div class="d-inline-block text-nowrap">
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
-                                <i class="ti ti-edit ti-md"></i>
+                          <button  
+                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-product-btn"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editProductModal"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            data-product-description="{{ $product->description }}"
+                            data-product-sku="{{ $product->sku }}"
+                            data-product-barcode="{{ $product->barcode }}"
+                            data-product-price="{{ $product->price }}"
+                            data-product-category-id="{{ $product->category_id }}"
+                            data-product-status="{{ $product->status }}"
+                            data-product-image="{{ $product->image }}"
+                          >
+                            <i class="ti ti-edit ti-md"></i>
+                          </button>
+                          <script>
+                            function deleteItem(itemId) {
+  // Confirm before deleting (optional)
+  if (!confirm("Are you sure you want to delete this item?")) {
+    return;
+  }
+
+  // Send an AJAX request to your backend
+  fetch(`/delete_product/${itemId}`, {
+    method: 'POST', // or 'POST' depending on your backend
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content // Add CSRF token if needed
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      // Handle success (e.g., show a message or reload the page)
+      alert("Item deleted successfully!");
+      window.location.reload(); // Reload the page or update the UI dynamically
+    } else {
+      // Handle error
+      alert("Failed to delete the item.");
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+}
+                          </script>
+                          
+                            <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
+                              <i class="ti ti-trash ti-md"></i> 
                             </button>
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                <i class="ti ti-dots-vertical ti-md"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end m-0">
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <a href="javascript:void(0);" class="dropdown-item">Suspend</a>
-                            </div>
+                          
+                            
+                            
                         </div>
                     </td>
                 </tr>
@@ -189,5 +279,114 @@
     </table>
 </div>
 </div>
+
+
+<!-- Single Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form id="editProductForm" method="POST" enctype="multipart/form-data">
+          @csrf
+          @method('PUT') <!-- Use PUT method for updates -->
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label for="edit-product-name" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="edit-product-name" name="productTitle" required>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="edit-product-description" class="form-label">Description</label>
+            <textarea class="form-control" id="edit-product-description" name="description"></textarea>
+          </div>
+
+          <!-- SKU -->
+          <div class="mb-3">
+            <label for="edit-product-sku" class="form-label">SKU</label>
+            <input type="text" class="form-control" id="edit-product-sku" name="productSku" required>
+          </div>
+
+          <!-- Barcode -->
+          <div class="mb-3">
+            <label for="edit-product-barcode" class="form-label">Barcode</label>
+            <input type="text" class="form-control" id="edit-product-barcode" name="productBarcode" required>
+          </div>
+
+          <!-- Price -->
+          <div class="mb-3">
+            <label for="edit-product-price" class="form-label">Price</label>
+            <input type="number" step="0.01" class="form-control" id="edit-product-price" name="productPrice" required>
+          </div>
+
+          <!-- Category -->
+          <div class="mb-3">
+            <label for="edit-product-category" class="form-label">Category</label>
+            <select class="form-select" id="edit-product-category" name="category">
+              <option value="">Select Category</option>
+              @foreach ($categories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <label for="edit-product-status" class="form-label">Status</label>
+            <select class="form-select" id="edit-product-status" name="status">
+              <option value="Publié">Publié</option>
+              <option value="Planifié">Planifié</option>
+              <option value="Inactif">Inactif</option>
+            </select>
+          </div>
+
+          <!-- Image -->
+          <div class="mb-3">
+            <label for="edit-product-image" class="form-label">Product Image</label>
+            <input type="file" class="form-control" id="edit-product-image" name="file">
+            <img id="edit-product-image-preview" src="" alt="Product Image" class="img-thumbnail mt-2" width="100" style="display: none;">
+          </div>
+
+          <!-- Submit Button -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!-- Modal -->
+ <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+       <div class="modal-body">
+        
+        <h5 class="modal-title" id="modalCenterTitle">Are you sure you want to delete the product ?</h5>
+        
+      </div> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/delete_product?id={{ $product->id }}">
+          <button type="button" class="btn btn-primary">Yes</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 @endsection

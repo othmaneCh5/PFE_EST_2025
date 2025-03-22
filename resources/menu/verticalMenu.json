@@ -22,7 +22,7 @@
           "slug": "app-ecommerce-product-add"
         },
         {
-          "url": "app/ecommerce/product/category",
+          "url": "/product-categories",
           "name": "Category List",
           "slug": "app-ecommerce-product-category"
         }

@@ -37,7 +37,18 @@
 @endsection
 
 @section('content')
-<div class="app-ecommerce-category">
+<div class="card-header d-flex justify-content-between align-items-center">
+  <h5 class="card-title mb-0">Categories</h5>
+  <button 
+  type="button" 
+  class="btn btn-primary" 
+  data-bs-toggle="modal" 
+  data-bs-target="#enableOTP"> 
+      <i class="ti ti-plus me-1"></i> Add Category
+  </button>
+</div> 
+
+<div class="app-ecommerce-category" style="position: relative;top : 15px;">
   <!-- Category List Table -->
   <div class="card">
     <div class="card-datatable table-responsive">
@@ -45,92 +56,226 @@
         <thead>
           <tr>
             <th></th>
-            <th></th>
+            <th>ID</th>
             <th>Categories</th>
-            <th class="text-nowrap text-sm-end">Total Products &nbsp;</th>
-            <th class="text-nowrap text-sm-end">Total Earning</th>
+            <th class="text-nowrap text-sm-end">Total Products</th>
+            <th class="text-nowrap text-sm-end">Total Earnings</th>
             <th class="text-lg-center">Actions</th>
           </tr>
         </thead>
+        <tbody>
+          @foreach ($categories as $category)
+            <tr>
+              <td></td>
+              <td>{{ $category->id }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar-wrapper me-3 rounded-2 bg-label-secondary">
+                    <div class="avatar">
+                      @if ($category->image)
+                        <img src="{{ asset('storage/' . $category->image) }}" alt="Category-{{ $category->id }}" class="rounded-2">
+                      @else
+                        <span class="avatar-initial rounded-2 bg-label-primary">{{ substr($category->name, 0, 2) }}</span>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <span class="text-heading text-wrap fw-medium">{{ $category->name }}</span>
+                    <span class="text-truncate mb-0 d-none d-sm-block"><small>{{ $category->description }}</small></span>
+                  </div>
+                </div>
+              </td>
+              <td class="text-sm-end">{{ $category->products_count }}</td>
+              <td class="text-sm-end">{{ $category->total_earnings }}</td>
+              <td class="text-lg-center">
+                <div class="d-flex align-items-sm-center justify-content-sm-center">
+
+
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+  // Add event listeners to all edit buttons
+  document.querySelectorAll('.edit-product-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      // Get the category data from data attributes
+      const categoryId = button.getAttribute('data-category-id');
+      const categoryName = button.getAttribute('data-category-name');
+      const categoryDescription = button.getAttribute('data-category-description');
+      const categoryParentId = button.getAttribute('data-category-parent');
+      const categoryImage = button.getAttribute('data-category-image');
+
+      // Update the form action URL
+      const form = document.getElementById('editCategoryForm');
+      form.action = `/edit_category/${categoryId}`;
+
+      // Populate the form fields
+      document.getElementById('edit-category-name').value = categoryName;
+      document.getElementById('edit-category-description').value = categoryDescription;
+      document.getElementById('edit-category-parent').value = categoryParentId;
+
+      // Update the image preview
+      const imagePreview = document.getElementById('edit-category-image-preview');
+      if (categoryImage) {
+        imagePreview.src = `/storage/${categoryImage}`;
+        imagePreview.style.display = 'block';
+      } else {
+        imagePreview.style.display = 'none';
+      }
+    });
+  });
+});
+                  </script>
+
+                  <button  
+                  class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-product-btn"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#editCategoryModal"
+                  data-category-id="{{ $category->id }}"
+                  data-category-name="{{ $category->name }}"
+                  data-category-description="{{ $category->description }}"
+                  data-category-parent="{{ $category->parent_id }}"
+                  data-category-image="{{ $category->image }}"
+                  >
+                  <i class="ti ti-edit ti-md"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
+                    <i class="ti ti-trash ti-md"></i> 
+                  </button>
+                  
+                </div>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
       </table>
     </div>
   </div>
-  <!-- Offcanvas to add new customer -->
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEcommerceCategoryList" aria-labelledby="offcanvasEcommerceCategoryListLabel">
-    <!-- Offcanvas Header -->
-    <div class="offcanvas-header py-6">
-      <h5 id="offcanvasEcommerceCategoryListLabel" class="offcanvas-title">Add Category</h5>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <!-- Offcanvas Body -->
-    <div class="offcanvas-body border-top">
-      <form class="pt-0" id="eCommerceCategoryListForm" onsubmit="return true">
-        <!-- Title -->
-        <div class="mb-6">
-          <label class="form-label" for="ecommerce-category-title">Title</label>
-          <input type="text" class="form-control" id="ecommerce-category-title" placeholder="Enter category title" name="categoryTitle" aria-label="category title">
-        </div>
-        <!-- Slug -->
-        <div class="mb-6">
-          <label class="form-label" for="ecommerce-category-slug">Slug</label>
-          <input type="text" id="ecommerce-category-slug" class="form-control" placeholder="Enter slug" aria-label="slug" name="slug">
-        </div>
-        <!-- Image -->
-        <div class="mb-6">
-          <label class="form-label" for="ecommerce-category-image">Attachment</label>
-          <input class="form-control" type="file" id="ecommerce-category-image">
-        </div>
-        <!-- Parent category -->
-        <div class="mb-6 ecommerce-select2-dropdown">
-          <label class="form-label" for="ecommerce-category-parent-category">Parent category</label>
-          <select id="ecommerce-category-parent-category" class="select2 form-select" data-placeholder="Select parent category">
-            <option value="">Select parent Category</option>
-            <option value="Household">Household</option>
-            <option value="Management">Management</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Office">Office</option>
-            <option value="Automotive">Automotive</option>
-          </select>
-        </div>
-        <!-- Description -->
-        <div class="mb-6">
-          <label class="form-label">Description</label>
-          <div class="form-control p-0 py-1">
-            <div class="comment-editor border-0" id="ecommerce-category-description">
-            </div>
-            <div class="comment-toolbar border-0 rounded">
-              <div class="d-flex justify-content-end">
-                <span class="ql-formats me-0">
-                  <button class="ql-bold"></button>
-                  <button class="ql-italic"></button>
-                  <button class="ql-underline"></button>
-                  <button class="ql-list" value="ordered"></button>
-                  <button class="ql-list" value="bullet"></button>
-                  <button class="ql-link"></button>
-                  <button class="ql-image"></button>
-                </span>
-              </div>
-            </div>
-          </div>
 
-        </div>
-        <!-- Status -->
-        <div class="mb-6 ecommerce-select2-dropdown">
-          <label class="form-label">Select category status</label>
-          <select id="ecommerce-category-status" class="select2 form-select" data-placeholder="Select category status">
-            <option value="">Select category status</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Publish">Publish</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
-        <!-- Submit and reset -->
-        <div class="mb-6">
-          <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Add</button>
-          <button type="reset" class="btn btn-label-danger" data-bs-dismiss="offcanvas">Discard</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <!-- Offcanvas to add new category -->
 </div>
+
+    <div class="modal fade" id="enableOTP" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="text-center mb-6">
+              <h4 class="mb-2">Add a new category</h4>
+            </div>
+            <form action="/add_category" method="POST" enctype="multipart/form-data">
+              @csrf
+            <div class="mb-6">
+                <label class="form-label" for="ecommerce-product-name">Name</label>
+                <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product title" name="name" aria-label="Product title" required>
+            </div>
+            
+                
+            <div class="mb-6">
+                <label class="form-label" for="category-org">
+                  <span>Category</span>
+              </label>
+              <select name="parent_id" id="category-org" class="select2 form-select" data-placeholder="Select Category">
+                  <option value="">Select Category</option>
+                    @foreach($categories as $category)
+                      <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach 
+              </select>
+            </div>
+            
+            <!-- Description -->
+            <div>
+                <label class="mb-1">Description (Optional)</label>
+                <textarea class="form-control" name="description" id="ecommerce-category-description" rows="4"></textarea>
+            </div>
+            
+            <div class="mb-4">
+              <label for="formFile" class="form-label">category image</label>
+              <input class="form-control" type="file" id="formFile" name="image">
+            </div>
+             
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary me-3">Submit</button>
+                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="text-center mb-6">
+              <h4 class="mb-2">Edit Category</h4>
+            </div>
+            <form id="editCategoryForm" action="/edit_category" method="POST" enctype="multipart/form-data">
+              @csrf
+              <input type="hidden" name="id" id="edit-category-id">
+              
+              <div class="mb-6">
+                <label class="form-label" for="ecommerce-product-name">Name</label>
+                <input type="text" class="form-control" id="edit-category-name" placeholder="Category name" name="name" aria-label="Category name" required>
+              </div>
+              
+              <div class="mb-6">
+                <label class="form-label" for="category-org">Parent Category</label>
+                <select name="edit-category-parent" id="category-org" class="select2 form-select" data-placeholder="Select Category">
+                  <option value="">Select Category</option>
+                  @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                  @endforeach 
+                </select>
+              </div>
+              
+              <div>
+                <label class="mb-1">Description (Optional)</label>
+                <textarea class="form-control" name="description" id="edit-category-description" rows="4"></textarea>
+              </div>
+              
+              <div class="mb-4">
+                <label for="formFile" class="form-label">Category Image</label>
+                <input class="form-control" type="file" id="formFile" name="image">
+              </div>
+              
+              <!-- Image Preview -->
+              <div class="mb-4">
+                <img id="edit-category-image-preview" src="" alt="Category Image" style="max-width: 100px; display: none;">
+              </div>
+              
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary me-3">Submit</button>
+                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+           <div class="modal-body">
+            
+            <h5 class="modal-title" id="modalCenterTitle">Are you sure you want to delete the category ?</h5>
+            
+          </div> 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+            <a href="/delete_category?id={{ $category->id }}">
+              <button type="button" class="btn btn-primary">Yes</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
 @endsection
