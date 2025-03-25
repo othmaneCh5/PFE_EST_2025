@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class UserController extends Controller
+{
+    public function index()
+  {
+    $users = User::all();
+    return view('content.apps.app-user-list' , compact('users'));
+  }
+
+  public function add(Request $request)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|max:255', 
+            'password' => 'required|string|max:255',
+            'profile_photo_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'nullable',
+            'phone_number' => 'required|string|unique:products,sku',
+            'dob' => 'required|date|before:today',
+        ]);
+
+        // If validation fails, redirect back with errors
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Handle the image upload (if provided)
+        $imagePath = null;
+        if ($request->hasFile('profile_photo_path')) {
+            $imagePath = $request->file('profile_photo_path')->store('users', 'public'); // Store the image in the 'public/products' directory
+        }
+
+        // Create the product
+        $user = User::create([
+            'name' => $request->input('name'),
+            'password' => $request->input('password'),
+            'phone_number' => $request->input('phone_number'),
+            'email' => $request->input('email'),
+            'status' => $request->input('status'),
+            'profile_photo_path' => $imagePath,
+            'dob' => $request->input('dob'), 
+        ]);
+
+        // Redirect with a success message
+        return redirect()->route('app-user-list')->with('success', 'User added successfully!');
+    }
+
+    public function update(Request $request, $id)
+{
+    // Debugging: Check incoming request data
+    // This will dump all request data and stop execution
+
+    $user = User::findOrFail($id);
+
+    // Debugging: Check if user is found
+    if (!$user) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255', // Remove '$id' concatenation here
+        'email' => 'required|max:255',
+        'password' => 'nullable|string|min:8|confirmed',
+        'profile_photo_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'status' => 'nullable',
+        'phone_number' => 'required|string', // Remove '$id' concatenation here
+        'dob' => 'required|date|before:today',
+    ]);
+    
+
+    // If validation fails, redirect back with errors
+    if ($validator->fails()) {
+        // Debugging: Check validation errors
+        dd($validator->errors());
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+
+    // Debugging: Check if image file is present
+    if ($request->hasFile('profile_photo_path')) {
+        dd('Profile photo detected');
+    }
+
+    // Handle the image upload (if provided)
+    $imagePath = $user->profile_photo_path;
+    if ($request->hasFile('profile_photo_path')) {
+        // Delete old image if it exists
+        if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+            // Debugging: Confirm old image deletion
+            dd('Deleting old profile photo...');
+            Storage::disk('public')->delete($imagePath);
+        }
+        $imagePath = $request->file('profile_photo_path')->store('users', 'public');
+    }
+
+    // Prepare the update data
+    $updateData = [
+        'name' => $request->input('name'),
+        'phone_number' => $request->input('phone_number'),
+        'email' => $request->input('email'),
+        'status' => $request->input('status', 'active'),
+        'profile_photo_path' => $imagePath,
+        'dob' => $request->input('dob'), 
+    ];
+
+    // Debugging: Check updated data
+   
+
+    // Only update password if provided
+    if ($request->filled('password')) {
+        $updateData['password'] = Hash::make($request->input('password'));
+    }
+
+    // Update the user
+    $user->update($updateData);
+
+    // Debugging: Confirm user updated
+  
+
+    // Redirect with success message
+    return redirect()->route('app-user-list')->with('success', 'User updated successfully!');
+}
+    public function delete(Request $request){
+        $id = $request->query('id');
+        $user = User::FindOrFail($id);
+        if ($user) {
+            $user->delete();
+            return redirect()->route('app-user-list')->with('success', 'user deleted successfully!');
+        }
+    }
+}

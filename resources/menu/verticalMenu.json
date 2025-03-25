@@ -49,7 +49,7 @@
       "name": "Employés",
       "icon": "menu-icon tf-icons ti ti-users",
       "slug": "app-user",
-      "url": "app/user/list"
+      "url": "/users"
     },
     {
       "name": "Roles & Permissions",

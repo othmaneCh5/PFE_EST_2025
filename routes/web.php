@@ -13,6 +13,7 @@ use App\Http\Controllers\layouts\Blank;
 use App\Http\Controllers\layouts\Fluid;
 use App\Http\Controllers\charts\ChartJs;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\apps\InvoiceAdd;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\pages\MiscError;
@@ -179,6 +180,12 @@ Route::post('/add_category' , [CategoryController::class , 'add']);
 Route::post('/edit_category/{id}', [CategoryController::class, 'update']);
 Route::get('/delete_category', [CategoryController::class, 'delete']);
 
+//users
+Route::get('/users', [UserController::class, 'index'])->name('app-user-list');
+Route::post('/add_user' , [UserController::class , 'add']);
+Route::get('/delete_user' , [UserController::class , 'delete']);
+Route::put('/edit_user/{id}', [UserController::class, 'update'])->name('users.update');
+
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
 Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
@@ -239,7 +246,6 @@ Route::get('/app/invoice/preview', [InvoicePreview::class, 'index'])->name('app-
 Route::get('/app/invoice/print', [InvoicePrint::class, 'index'])->name('app-invoice-print');
 Route::get('/app/invoice/edit', [InvoiceEdit::class, 'index'])->name('app-invoice-edit');
 Route::get('/app/invoice/add', [InvoiceAdd::class, 'index'])->name('app-invoice-add');
-Route::get('/app/user/list', [UserList::class, 'index'])->name('app-user-list');
 Route::get('/app/user/view/account', [UserViewAccount::class, 'index'])->name('app-user-view-account');
 Route::get('/app/user/view/security', [UserViewSecurity::class, 'index'])->name('app-user-view-security');
 Route::get('/app/user/view/billing', [UserViewBilling::class, 'index'])->name('app-user-view-billing');
