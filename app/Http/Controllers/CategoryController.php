@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CategoryController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
   {
+    $this->authorize('view categories');
     $categories = Category::withCount('products')->get();
     return view('content.apps.app-ecommerce-category-list' , compact('categories'));
   }
@@ -17,6 +20,7 @@ class CategoryController extends Controller
 
   public function add(Request $request)
     {
+        $this->authorize('add categories');
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'string|max:255',
@@ -51,6 +55,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
 {
+    $this->authorize('edit categories');
     // Validate the request
     $request->validate([
         'name' => 'required|string|max:255',
@@ -80,6 +85,7 @@ class CategoryController extends Controller
 
 public function delete(Request $request)
 {
+    $this->authorize('delete categories');
     $id = $request->query('id');
     $category = Category::find($id); 
     if ($category) {

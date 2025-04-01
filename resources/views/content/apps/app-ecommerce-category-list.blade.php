@@ -39,13 +39,16 @@
 @section('content')
 <div class="card-header d-flex justify-content-between align-items-center">
   <h5 class="card-title mb-0">Categories</h5>
-  <button 
+  @can('create categories')
+       <button 
   type="button" 
   class="btn btn-primary" 
   data-bs-toggle="modal" 
   data-bs-target="#enableOTP"> 
       <i class="ti ti-plus me-1"></i> Add Category
-  </button>
+  </button> 
+  @endcan
+  
 </div> 
 
 <div class="app-ecommerce-category" style="position: relative;top : 15px;">
@@ -125,6 +128,7 @@
 });
                   </script>
 
+                  @can('edit categories')
                   <button  
                   class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-product-btn"
                   data-bs-toggle="modal" 
@@ -137,9 +141,12 @@
                   >
                   <i class="ti ti-edit ti-md"></i>
                   </button>
+                  @endcan
+                  @can('delete categories')
                   <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
                     <i class="ti ti-trash ti-md"></i> 
                   </button>
+                  @endcan
                   
                 </div>
               </td>

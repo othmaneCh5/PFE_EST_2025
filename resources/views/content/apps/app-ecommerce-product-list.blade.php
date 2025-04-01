@@ -26,6 +26,7 @@
 
 @section('content')
 <!-- Product List Widget -->
+
 <div class="card mb-6">
   <div class="card-widget-separator-wrapper">
     <div class="card-body card-widget-separator">
@@ -94,11 +95,14 @@
       <div class="col-md-4 product_category"></div>
       <div class="col-md-4 product_stock"></div>
     </div> --}}
-    <a href="/product-add">
+    @can('create products')
+        <a href="/product-add">
       <button type="button" class="btn btn-primary" > 
       <i class="ti ti-plus me-1"></i> Add Product
       </button>
-    </a>
+        </a>
+    @endcan
+    
     
   </div>
   <div class="card-datatable table-responsive">
@@ -114,7 +118,9 @@
                 <th>Price</th>
                 <th>Qty</th>
                 <th>Status</th>
-                <th>Actions</th>
+                @canany(['edit users', 'delete users'])
+                  <th>Actions</th>
+                @endcanany
             </tr>
         </thead>
         <tbody>
@@ -218,6 +224,7 @@
                     </script>
                     <td>
                         <div class="d-inline-block text-nowrap">
+                          @can('edit products')
                           <button  
                             class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-product-btn"
                             data-bs-toggle="modal" 
@@ -234,6 +241,8 @@
                           >
                             <i class="ti ti-edit ti-md"></i>
                           </button>
+                          @endcan
+                          
                           <script>
                             function deleteItem(itemId) {
   // Confirm before deleting (optional)
@@ -264,10 +273,12 @@
   });
 }
                           </script>
-                          
-                            <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
-                              <i class="ti ti-trash ti-md"></i> 
-                            </button>
+                          @can('delete products')
+                              <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
+                                  <i class="ti ti-trash ti-md"></i> 
+                              </button>
+                          @endcan
+                            
                           
                             
                             

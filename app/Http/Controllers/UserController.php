@@ -4,18 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
   {
+    $this->authorize('view users');
+    $roles = Role::all();
     $users = User::all();
-    return view('content.apps.app-user-list' , compact('users'));
+    return view('content.apps.app-user-list' , compact('users' , 'roles'));
   }
 
   public function add(Request $request)
     {
+        $this->authorize('create users');
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -50,6 +56,8 @@ class UserController extends Controller
             'profile_photo_path' => $imagePath,
             'dob' => $request->input('dob'), 
         ]);
+        $role = Role::find($request->input('role')); // Find the role by ID
+        $user->assignRole($role); // Assign the role to the user
 
         // Redirect with a success message
         return redirect()->route('app-user-list')->with('success', 'User added successfully!');
@@ -57,6 +65,7 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
 {
+    $this->authorize('edit users');
     // Debugging: Check incoming request data
     // This will dump all request data and stop execution
 
@@ -133,6 +142,7 @@ class UserController extends Controller
     return redirect()->route('app-user-list')->with('success', 'User updated successfully!');
 }
     public function delete(Request $request){
+        $this->authorize('delete users');
         $id = $request->query('id');
         $user = User::FindOrFail($id);
         if ($user) {
