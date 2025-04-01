@@ -4,45 +4,50 @@
 
 'use strict';
 
-// Datatable (jquery)
 $(function () {
-  let borderColor, bodyBg, headingColor;
+  //-------------------------------------------------------
+  // 1) DEFINE ALL DOM ELEMENT REFERENCES AT THE TOP
+  //-------------------------------------------------------
+  const formEl       = $('#eCommerceCustomerAddForm');
+  const offcanvasEl  = $('#offcanvasEcommerceCustomerAdd');
+  const submitBtn    = $('.data-submit');          // main add/update button
+  const nameField    = $('#ecommerce-customer-add-name');
+  const emailField   = $('#ecommerce-customer-add-email');
+  const contactField = $('#ecommerce-customer-add-contact');
+  const addressField = $('#ecommerce-customer-add-address');
+  const townField    = $('#ecommerce-customer-add-town');
+  const pinField     = $('#ecommerce-customer-add-post-code');
+  const buttonEl     = $('#customerSubmitBtn');    // optional: if your Blade uses this ID for the button
 
-  if (isDarkStyle) {
-    borderColor = config.colors_dark.borderColor;
-    bodyBg = config.colors_dark.bodyBg;
+  let borderColor, bodyBg, headingColor;
+  if (typeof isDarkStyle !== 'undefined' && isDarkStyle) {
+    borderColor  = config.colors_dark.borderColor;
+    bodyBg       = config.colors_dark.bodyBg;
     headingColor = config.colors_dark.headingColor;
   } else {
-    borderColor = config.colors.borderColor;
-    bodyBg = config.colors.bodyBg;
-    headingColor = config.colors.headingColor;
+    borderColor  = (config && config.colors) ? config.colors.borderColor : '#ebebeb';
+    bodyBg       = (config && config.colors) ? config.colors.bodyBg : '#fff';
+    headingColor = (config && config.colors) ? config.colors.headingColor : '#000';
   }
 
-  // Variable declaration for table
-  var dt_customer_table = $('.datatables-customers'),
-    select2 = $('.select2'),
-    customerView = baseUrl + 'app/ecommerce/customer/details/overview';
-  if (select2.length) {
-    var $this = select2;
-    $this.wrap('<div class="position-relative"></div>').select2({
-      placeholder: 'United States ',
-      dropdownParent: $this.parent()
-    });
-  }
+  //-------------------------------------------------------
+  // 2) SETUP DATATABLE
+  //-------------------------------------------------------
+  const dt_customer_table = $('.datatables-customers');
+  let dt_customer;
 
-  // customers datatable
   if (dt_customer_table.length) {
-    var dt_customer = dt_customer_table.DataTable({
-      ajax: assetsPath + 'json/ecommerce-customer-all.json', // JSON file to add data
+    dt_customer = dt_customer_table.DataTable({
+      ajax: window.CUSTOMERS_DATA_URL, // e.g. "/app/ecommerce/customers/data"
       columns: [
-        // columns according to JSON
         { data: '' },
         { data: 'id' },
-        { data: 'customer' },
-        { data: 'customer_id' },
-        { data: 'country' },
-        { data: 'order' },
-        { data: 'total_spent' }
+        { data: 'id_client' },
+        { data: 'name' },
+        { data: 'email' },
+        { data: 'tel' },
+        { data: 'adresse' },
+        { data: '' }
       ],
       columnDefs: [
         {
@@ -52,9 +57,7 @@ $(function () {
           orderable: false,
           responsivePriority: 2,
           targets: 0,
-          render: function (data, type, full, meta) {
-            return '';
-          }
+          render: () => ''
         },
         {
           // For Checkboxes
@@ -63,115 +66,69 @@ $(function () {
           searchable: false,
           responsivePriority: 3,
           checkboxes: true,
-          render: function () {
-            return '<input type="checkbox" class="dt-checkboxes form-check-input">';
-          },
-          checkboxes: {
-            selectAllRender: '<input type="checkbox" class="form-check-input">'
-          }
+          render: () => '<input type="checkbox" class="dt-checkboxes form-check-input">',
+          checkboxes: { selectAllRender: '<input type="checkbox" class="form-check-input">' }
         },
         {
-          // customer full name and email
           targets: 2,
-          responsivePriority: 1,
-          render: function (data, type, full, meta) {
-            var $name = full['customer'],
-              $email = full['email'],
-              $image = full['image'];
-
-            if ($image) {
-              // For Avatar image
-              var $output =
-                '<img src="' + assetsPath + 'img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
-            } else {
-              // For Avatar badge
-              var stateNum = Math.floor(Math.random() * 6);
-              var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
-              var $state = states[stateNum],
-                $name = full['customer'],
-                $initials = $name.match(/\b\w/g) || [];
-              $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-              $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>';
-            }
-            // Creates full output for row
-            var $row_output =
-              '<div class="d-flex justify-content-start align-items-center customer-name">' +
-              '<div class="avatar-wrapper">' +
-              '<div class="avatar avatar-sm me-3">' +
-              $output +
-              '</div>' +
-              '</div>' +
-              '<div class="d-flex flex-column">' +
-              '<a href="' +
-              customerView +
-              '" class="text-heading" ><span class="fw-medium">' +
-              $name +
-              '</span></a>' +
-              '<small>' +
-              $email +
-              '</small>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
+          render: function (data, type, full) {
+            return `<span class="text-heading">#${full.id_client}</span>`;
           }
         },
         {
-          // customer Role
+          // Name or Avatar
           targets: 3,
-          render: function (data, type, full, meta) {
-            var $id = full['customer_id'];
-
-            return "<span class='text-heading'>#" + $id + '</span>';
-          }
-        },
-        {
-          // Plans
-          targets: 4,
-          render: function (data, type, full, meta) {
-            var $plan = full['country'];
-            var $code = full['country_code'];
-
-            if ($code) {
-              var $output_code = `<i class ="fis fi fi-${$code} rounded-circle me-2 fs-4"></i>`;
+          responsivePriority: 1,
+          render: function (data, type, full) {
+            const $name = full.name;
+            let $output;
+            if (full.image) {
+              $output = `<img src="${assetsPath}img/avatars/${full.image}" alt="Avatar" class="rounded-circle">`;
             } else {
-              // For Avatar badge
-              var $output_code = `<i class ="fis fi fi-xx rounded-circle me-2 fs-4"></i>`;
+              const states = ['success','danger','warning','info','dark','primary'];
+              const rand = states[Math.floor(Math.random() * states.length)];
+              const initials = ($name.match(/\b\w/g) || []).join('').toUpperCase();
+              $output = `<span class="avatar-initial rounded-circle bg-label-${rand}">${initials}</span>`;
             }
-
-            var $row_output =
-              '<div class="d-flex justify-content-start align-items-center customer-country">' +
-              '<div>' +
-              $output_code +
-              '</div>' +
-              '<div>' +
-              '<span>' +
-              $plan +
-              '</span>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
+            return `
+              <div class="d-flex align-items-center customer-name">
+                <div class="avatar avatar-sm me-3">${$output}</div>
+                <div class="d-flex flex-column">
+                  <span class="fw-medium">${$name}</span>
+                </div>
+              </div>
+            `;
           }
         },
         {
-          // customer Status
-          targets: 5,
-          render: function (data, type, full, meta) {
-            var $status = full['order'];
-
-            return '<span>' + $status + '</span>';
+          targets: 4,
+          render: function (data, type, full) {
+            return `<span>${full.email}</span>`;
           }
         },
         {
-          // customer Spent
-          targets: 6,
-          render: function (data, type, full, meta) {
-            var $spent = full['total_spent'];
-
-            return '<span class="fw-medium text-heading">' + $spent + '</span>';
+          // Actions
+          targets: -1,
+          title: 'Actions',
+          searchable: false,
+          orderable: false,
+          render: function (data, type, full) {
+            return `
+            <div class="d-flex align-items-sm-center">
+              <button class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                <i class="ti ti-dots-vertical"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end m-0">
+                <a href="javascript:void(0);" class="dropdown-item edit-record" data-id="${full.id}">Edit</a>
+                <a href="javascript:void(0);" class="dropdown-item delete-record" data-id="${full.id}">Delete</a>
+              </div>
+            </div>
+            `;
           }
         }
       ],
       order: [[2, 'desc']],
+      // Add your DataTable extras: buttons, language, etc.
       dom:
         '<"card-header d-flex flex-wrap flex-md-row flex-column align-items-start align-items-sm-center py-0"' +
         '<"d-flex align-items-center me-5"f>' +
@@ -376,31 +333,113 @@ $(function () {
         }
       }
     });
+
+    // Optional styling adjustments
     $('.dataTables_length').addClass('ms-n2 me-2');
     $('.dt-action-buttons').addClass('pt-0');
     $('.dataTables_filter').addClass('ms-n3 mb-0 mb-md-6');
     $('.dt-buttons').addClass('d-flex flex-wrap');
   }
 
-  // Delete Record
-  $('.datatables-customers tbody').on('click', '.delete-record', function () {
-    dt_customer.row($(this).parents('tr')).remove().draw();
+  //-------------------------------------------------------
+  // 3) EDIT => FETCH => FILL FORM => SHOW OFFCANVAS
+  //-------------------------------------------------------
+  $(document).on('click', '.edit-record', function () {
+    const id = $(this).data('id');
+    $.get(`/app/ecommerce/customers/${id}/edit`, function (client) {
+      // fill fields
+      nameField.val(client.name);
+      emailField.val(client.email);
+      contactField.val(client.tel);
+      addressField.val(client.adresse);
+      // If you want to parse 'adresse' => do .split(',')
+
+      // Mark form as update mode
+      formEl.attr('data-id', client.id);
+      // Switch button text => 'Modifier'
+      buttonEl.text('Modifier');
+
+      // Show offcanvas
+      offcanvasEl.offcanvas('show');
+    }).fail(function (xhr) {
+      alert('Failed to fetch client data. See console for details.');
+      console.error(xhr.responseText);
+    });
   });
 
-  // Filter form control to default size
-  // ? setTimeout used for multilingual table initialization
-  setTimeout(() => {
-    $('.dataTables_filter .form-control').removeClass('form-control-sm');
-    $('.dataTables_length .form-select').removeClass('form-select-sm');
-  }, 300);
+  //-------------------------------------------------------
+  // 4) DELETE => confirm => call route => reload table
+  //-------------------------------------------------------
+  $(document).on('click', '.delete-record', function () {
+    const id = $(this).data('id');
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+
+    $.ajax({
+      url: `/app/ecommerce/customers/${id}`,
+      method: 'POST', // We'll spoof DELETE
+      data: {
+        _method: 'DELETE',
+        _token: $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function () {
+        dt_customer.ajax.reload();
+      },
+      error: function (xhr) {
+        alert('Failed to delete customer.');
+        console.error(xhr.responseText);
+      }
+    });
+  });
+
+  //-------------------------------------------------------
+  // 5) CREATE / UPDATE => single handler
+  //-------------------------------------------------------
+  submitBtn.on('click', function () {
+    const id = formEl.attr('data-id'); // if present => update
+    const isUpdate = !!id;
+
+    const url = isUpdate
+      ? `/app/ecommerce/customers/${id}`
+      : window.CUSTOMERS_STORE_URL; // e.g. "/app/ecommerce/customers/store"
+
+    // we do POST both times, but spoof PUT if update
+    const methodOverride = isUpdate ? 'PUT' : null;
+
+    $.ajax({
+      url: url,
+      method: 'POST',
+      data: {
+        _method: methodOverride,
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        customerName: nameField.val(),
+        customerEmail: emailField.val(),
+        customerContact: contactField.val(),
+        customerAddress1: addressField.val(),
+        customerTown: townField.val(),
+        pin: pinField.val()
+      },
+      success: function () {
+        offcanvasEl.offcanvas('hide');
+        formEl[0].reset();
+        formEl.removeAttr('data-id');
+        // revert text => "Ajouter"
+        buttonEl.text('Ajouter');
+        // reload table
+        dt_customer.ajax.reload();
+      },
+      error: function (xhr) {
+        alert('Error saving customer.');
+        console.error(xhr.responseText);
+      }
+    });
+  });
 });
 
-// Validation & Phone mask
+//
+// Additional logic for phone mask, form validation, etc.
+//
 (function () {
-  const phoneMaskList = document.querySelectorAll('.phone-mask'),
-    eCommerceCustomerAddForm = document.getElementById('eCommerceCustomerAddForm');
-
-  // Phone Number
+  const phoneMaskList = document.querySelectorAll('.phone-mask');
   if (phoneMaskList) {
     phoneMaskList.forEach(function (phoneMask) {
       new Cleave(phoneMask, {
@@ -409,41 +448,6 @@ $(function () {
       });
     });
   }
-  // Add New customer Form Validation
-  const fv = FormValidation.formValidation(eCommerceCustomerAddForm, {
-    fields: {
-      customerName: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter fullname '
-          }
-        }
-      },
-      customerEmail: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter your email'
-          },
-          emailAddress: {
-            message: 'The value is not a valid email address'
-          }
-        }
-      }
-    },
-    plugins: {
-      trigger: new FormValidation.plugins.Trigger(),
-      bootstrap5: new FormValidation.plugins.Bootstrap5({
-        // Use this for enabling/changing valid/invalid class
-        eleValidClass: '',
-        rowSelector: function (field, ele) {
-          // field is the field name & ele is the field element
-          return '.mb-6';
-        }
-      }),
-      submitButton: new FormValidation.plugins.SubmitButton(),
-      // Submit the form when all fields are valid
-      // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-      autoFocus: new FormValidation.plugins.AutoFocus()
-    }
-  });
-})();
+  // Example: formValidation usage, if needed
+})
+();

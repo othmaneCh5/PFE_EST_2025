@@ -21,6 +21,7 @@ use App\Http\Controllers\pages\UserTeams;
 use App\Http\Controllers\apps\AccessRoles;
 use App\Http\Controllers\apps\InvoiceEdit;
 use App\Http\Controllers\apps\InvoiceList;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\extended_ui\Misc;
 use App\Http\Controllers\extended_ui\Tour;
 use App\Http\Controllers\layouts\Vertical;
@@ -34,6 +35,7 @@ use App\Http\Controllers\pages\UserProfile;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\apps\AcademyCourse;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\extended_ui\Avatar;
 use App\Http\Controllers\layouts\Horizontal;
 use App\Http\Controllers\layouts\NavbarFull;
@@ -221,13 +223,78 @@ Route::get('/app/chat', [Chat::class, 'index'])->name('app-chat');
 Route::get('/app/calendar', [Calendar::class, 'index'])->name('app-calendar');
 Route::get('/app/kanban', [Kanban::class, 'index'])->name('app-kanban');
 Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
-Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
+
+//Commandes 
+
+// Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
 Route::get('/app/ecommerce/order/details', [EcommerceOrderDetails::class, 'index'])->name('app-ecommerce-order-details');
-Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');
+
+Route::prefix('app/ecommerce/commande')->group(function () {
+    // Display the order list page.
+    Route::get('/', [CommandeController::class, 'index'])->name('commande.index');
+
+    // Get JSON data for DataTables.
+    Route::get('/data', [CommandeController::class, 'getData'])->name('commande.data');
+
+    // Create a new order.
+    Route::post('/', [CommandeController::class, 'store'])->name('commande.store');
+
+    // Retrieve an order for editing.
+    Route::get('/{id}/edit', [CommandeController::class, 'edit'])->name('commande.edit');
+
+    // Update an existing order.
+    Route::put('/{id}', [CommandeController::class, 'update'])->name('commande.update');
+
+    // Delete an order.
+    Route::delete('/{id}', [CommandeController::class, 'destroy'])->name('commande.destroy');
+
+    // Delete an order.
+    // Route::delete('/details/{id}', [CommandeController::class, 'show'])->name('commande.show');
+
+    //details page
+    Route::get('/details/{id}', [CommandeController::class, 'show'])->name('orders.show');
+
+    //update client card
+    Route::put('/client/{id}/update-card', [ClientController::class, 'updateCard'])->name('client.updateCard');
+
+    // Show 'add product' page
+    Route::get('{commande}/add-product', [CommandeController::class, 'addProductView'])->name('commande.addProduct');
+
+   // Attach one product to the commande
+   Route::post('{commande}/attach-product', [CommandeController::class, 'attachProduct'])->name('commande.attachProduct');
+
+   // Detach product from commande
+   Route::delete('{commande}/detach-product/{product}', [CommandeController::class, 'detachProduct'])->name('commande.detachProduct');
+
+});
+
+
+
+//Client
+
+// Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');
+Route::get('/app/ecommerce/customer/all', [ClientController::class, 'index'])->name('app-ecommerce-customer-all');
+
+// DataTable JSON
+Route::get('/app/ecommerce/customers/data', [ClientController::class, 'getData'])->name('customers.data');
+
+// CREATE store
+Route::post('/app/ecommerce/customers/store', [ClientController::class, 'store'])->name('customers.store');
+
+// EDIT + UPDATE
+Route::get('/app/ecommerce/customers/{id}/edit', [ClientController::class, 'edit'])->name('customers.edit');
+Route::put('/app/ecommerce/customers/{id}', [ClientController::class, 'update'])->name('customers.update');
+
+// DELETE
+Route::delete('/app/ecommerce/customers/{id}', [ClientController::class, 'destroy'])->name('customers.destroy');
+
+
 Route::get('/app/ecommerce/customer/details/overview', [EcommerceCustomerDetailsOverview::class, 'index'])->name('app-ecommerce-customer-details-overview');
 Route::get('/app/ecommerce/customer/details/security', [EcommerceCustomerDetailsSecurity::class, 'index'])->name('app-ecommerce-customer-details-security');
 Route::get('/app/ecommerce/customer/details/billing', [EcommerceCustomerDetailsBilling::class, 'index'])->name('app-ecommerce-customer-details-billing');
 Route::get('/app/ecommerce/customer/details/notifications', [EcommerceCustomerDetailsNotifications::class, 'index'])->name('app-ecommerce-customer-details-notifications');
+
+//
 Route::get('/app/ecommerce/manage/reviews', [EcommerceManageReviews::class, 'index'])->name('app-ecommerce-manage-reviews');
 Route::get('/app/ecommerce/referrals', [EcommerceReferrals::class, 'index'])->name('app-ecommerce-referrals');
 Route::get('/app/ecommerce/settings/details', [EcommerceSettingsDetails::class, 'index'])->name('app-ecommerce-settings-details');
