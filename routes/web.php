@@ -68,6 +68,7 @@ use App\Http\Controllers\layouts\CollapsedMenu;
 use App\Http\Controllers\layouts\ContentNavbar;
 use App\Http\Controllers\layouts\WithoutNavbar;
 use App\Http\Controllers\pages\UserConnections;
+use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\tables\DatatableBasic;
 use App\Http\Controllers\user_interface\Alerts;
 use App\Http\Controllers\user_interface\Badges;
@@ -164,29 +165,83 @@ use App\Http\Controllers\apps\EcommerceCustomerDetailsSecurity;
 use App\Http\Controllers\wizard_example\Checkout as WizardCheckout;
 use App\Http\Controllers\apps\EcommerceCustomerDetailsNotifications;
 use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
+use App\Http\Controllers\RoleController;
 
 
 //test
 Route::get('/dash', [TestController::class, 'index'])->name('dashboard-test');
 
-//products
-Route::get('/products', [ProductController::class, 'index'])->name('product-list');
-Route::get('/product-add', [ProductController::class, 'open_add_product'])->name('product-add');
-Route::post('/add_product' , [ProductController::class , 'add']);
-Route::put('/products/{id}', [ProductController::class, 'edit'])->name('products.update');
-Route::get('/delete_product', [ProductController::class, 'delete']);
+// //products
+// Route::get('/products', [ProductController::class, 'index'])->name('product-list');
+// Route::get('/product-add', [ProductController::class, 'open_add_product'])->name('product-add');
+// Route::post('/add_product' , [ProductController::class , 'add']);
+// Route::put('/products/{id}', [ProductController::class, 'edit'])->name('products.update');
+// Route::get('/delete_product', [ProductController::class, 'delete']);
 
-//product categories
-Route::get('/product-categories', [CategoryController::class, 'index'])->name('product-categories');
-Route::post('/add_category' , [CategoryController::class , 'add']);
-Route::post('/edit_category/{id}', [CategoryController::class, 'update']);
-Route::get('/delete_category', [CategoryController::class, 'delete']);
+// //product categories
+// Route::get('/product-categories', [CategoryController::class, 'index'])->name('product-categories');
+// Route::post('/add_category' , [CategoryController::class , 'add']);
+// Route::post('/edit_category/{id}', [CategoryController::class, 'update']);
+// Route::get('/delete_category', [CategoryController::class, 'delete']);
 
-//users
-Route::get('/users', [UserController::class, 'index'])->name('app-user-list');
-Route::post('/add_user' , [UserController::class , 'add']);
-Route::get('/delete_user' , [UserController::class , 'delete']);
-Route::put('/edit_user/{id}', [UserController::class, 'update'])->name('users.update');
+// //users
+// Route::get('/users', [UserController::class, 'index'])->name('app-user-list');
+// Route::post('/add_user' , [UserController::class , 'add']);
+// Route::get('/delete_user' , [UserController::class , 'delete']);
+// Route::put('/edit_user/{id}', [UserController::class, 'update'])->name('users.update');
+// 📌 Products Management
+Route::get('/products', [ProductController::class, 'index'])
+->name('product-list')
+->middleware('permission:view products');
+
+Route::get('/product-add', [ProductController::class, 'open_add_product'])
+->name('product-add')
+->middleware('permission:create products');
+
+Route::post('/add_product', [ProductController::class, 'add'])
+->middleware('permission:create products');
+
+Route::put('/products/{id}', [ProductController::class, 'edit'])
+->name('products.update')
+->middleware('permission:edit products');
+
+Route::get('/delete_product', [ProductController::class, 'delete'])
+->middleware('permission:delete products');
+
+// 📌 Product Categories Management
+Route::get('/product-categories', [CategoryController::class, 'index'])
+->name('product-categories')
+->middleware('permission:view categories');
+
+Route::post('/add_category', [CategoryController::class, 'add'])
+->middleware('permission:create categories');
+
+Route::post('/edit_category/{id}', [CategoryController::class, 'update'])
+->middleware('permission:edit categories');
+
+Route::get('/delete_category', [CategoryController::class, 'delete'])
+->middleware('permission:delete categories');
+
+// 📌 User Management
+Route::get('/users', [UserController::class, 'index'])
+->name('app-user-list')
+->middleware('permission:view users');
+
+Route::post('/add_user', [UserController::class, 'add'])
+->middleware('permission:create users');
+
+Route::get('/delete_user', [UserController::class, 'delete'])
+->middleware('permission:delete users');
+
+Route::put('/edit_user/{id}', [UserController::class, 'update'])
+->name('users.update')
+->middleware('permission:edit users');
+
+
+//roles
+Route::get('/roles', [RoleController::class, 'index'])->name('app-access-roles')->middleware('permission:view roles');
+Route::post('/add_role', [RoleController::class, 'create_role'])->name('roles.store')->middleware('permission:create roles');
+
 
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
@@ -318,7 +373,6 @@ Route::get('/app/user/view/security', [UserViewSecurity::class, 'index'])->name(
 Route::get('/app/user/view/billing', [UserViewBilling::class, 'index'])->name('app-user-view-billing');
 Route::get('/app/user/view/notifications', [UserViewNotifications::class, 'index'])->name('app-user-view-notifications');
 Route::get('/app/user/view/connections', [UserViewConnections::class, 'index'])->name('app-user-view-connections');
-Route::get('/app/access-roles', [AccessRoles::class, 'index'])->name('app-access-roles');
 Route::get('/app/access-permission', [AccessPermission::class, 'index'])->name('app-access-permission');
 
 // pages

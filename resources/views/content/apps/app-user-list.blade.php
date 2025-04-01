@@ -120,31 +120,19 @@
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="card-title">Products</h5>
-      <button 
+    <h5 class="card-title">Users</h5>
+    @can('create users')
+        <button 
       type="button" 
       class="btn btn-primary" 
       data-bs-toggle="modal" 
       data-bs-target="#largeModal"> 
-      <i class="ti ti-plus me-1"></i> Add Product
+      <i class="ti ti-plus me-1"></i> Add User
       </button>
+    @endcan
+      
   </div>
-  {{-- <div class="card-datatable table-responsive">
-    <table class="datatables-users table">
-      <thead class="border-top">
-        <tr>
-          <th></th>
-          <th></th>
-          <th>User</th>
-          <th>Role</th>
-          <th>Plan</th>
-          <th>Billing</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-    </table>
-  </div> --}}
+  
 
 
 
@@ -157,7 +145,9 @@
                 <th>Phone number</th>
                 <th>Date f birth</th>
                 <th>Status</th>
-                <th>Actions</th>
+                @canany(['edit users', 'delete users'])
+                  <th>Actions</th>
+                @endcanany
             </tr>
         </thead>
         <tbody>
@@ -189,19 +179,11 @@
                     </td>
                     <td>
                         <span  class="text-truncate d-flex align-items-center text-heading">
-                            @php
-                                $roleBadgeObj = [
-                                    'Subscriber' => '<i class="ti ti-crown ti-md text-primary me-2"></i>',
-                                    'Author' => '<i class="ti ti-edit ti-md text-warning me-2"></i>',
-                                    'Maintainer' => '<i class="ti ti-user ti-md text-success me-2"></i>',
-                                    'Editor' => '<i class="ti ti-chart-pie ti-md text-info me-2"></i>',
-                                    'Admin' => '<i class="ti ti-device-desktop ti-md text-danger me-2"></i>'
-                                ];
-                              
-                            @endphp
-                            {!! $roleBadgeObj['Subscriber'] ?? '' !!}
-                            Subscriber
-                            {{ $user->role }}
+                            @if ($user->roles->first()->name == 'adminastrator')
+                              <span class="badge bg-danger bg-glow">adminastrator</span>
+                            @else
+                              <span class="badge bg-warning bg-glow">{{ $user->roles->first()->name }}</span>
+                            @endif
                         </span>
                     </td>
                     <td>
@@ -223,7 +205,8 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                          <button  
+                      @can('edit categories')
+                        <button  
                             class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-user-btn"
                             data-bs-toggle="modal" 
                             data-bs-target="#editUserModal"
@@ -234,16 +217,21 @@
                             data-user-dob="{{ $user->dob }}"
                             data-user-status="{{ $user->status }}"
                             data-user-role="{{ $user->role }}"
-                            data-user-image="{{ $user->profile_photo_path }}"
+                            data-user-image="{{ $user->profile_photo_path }}" 
                           >
                             <i class="ti ti-edit ti-md"></i>
                          </button>
+                      @endcan
+                          
                             {{-- <a href="{{ route('app-user-view', $user->id) }}" class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"> --}}
                                 {{-- <i class="ti ti-eye ti-md"></i>
                             </a> --}}
+                          @can('delete categories')
                             <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
                               <i class="ti ti-trash ti-md"></i> 
                             </button>
+                          @endcan
+                            
                             {{-- <div class="dropdown-menu dropdown-menu-end m-0">
                                 <a href="javascript:;" class="dropdown-item">Edit</a>
                                 <a href="javascript:;" class="dropdown-item">Suspend</a>
@@ -296,16 +284,17 @@
           
         </div>
         <div class="mb-6 col ecommerce-select2-dropdown">
-          <label class="form-label mb-1" for="category-org">
-              <span>Role</span>
+          <label class="form-label mb-1" for="editRole">
+            <span>Role</span>
           </label>
-          <select name="role" id="category-org" class="select2 form-select" data-placeholder="Select Category">
-              <option value="">Select Role</option>
-              {{-- @foreach($categories as $category) --}}
-                  {{-- <option value="{{ $category->id }}">{{ $category->name }}</option> --}}
-              {{-- @endforeach  --}}
+          <select name="role" id="editRole" class="select2 form-select" data-placeholder="Select Role">
+            <option value="">Select Role</option>
+            
+            @foreach($roles as $role)
+              <option value="{{ $role->id }}">{{ $role->name }}</option>
+            @endforeach 
           </select>
-      </div>
+        </div>
       </div>
       <div class="row g-6" style="position: relative ; top:20px;">
         <div class="col mb-6">
@@ -422,9 +411,10 @@ document.addEventListener('DOMContentLoaded', function () {
               </label>
               <select name="role" id="editRole" class="select2 form-select" data-placeholder="Select Role">
                 <option value="">Select Role</option>
-                {{-- @foreach($roles as $role) --}}
-                  {{-- <option value="{{ $role->id }}">{{ $role->name }}</option> --}}
-                {{-- @endforeach --}}
+                
+                @foreach($roles as $role)
+                  <option value="{{ $role->id }}">{{ $role->name }}</option>
+                @endforeach 
               </select>
             </div>
           </div>

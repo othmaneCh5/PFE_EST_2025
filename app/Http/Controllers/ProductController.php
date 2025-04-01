@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;  // Import DB facade
 use Illuminate\Support\Facades\Log; // Import Log facade
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProductController extends Controller
 {
+    use AuthorizesRequests;
     // Open the products list
     public function index()
     {
+        $this->authorize('view products');
         $categories = Category::all();
         $products = Product::with('category')->get();
         return view("content.apps.app-ecommerce-product-list" , compact('products' , 'categories'));
@@ -22,6 +26,7 @@ class ProductController extends Controller
     // Open the add product page
     public function open_add_product()
     {
+        $this->authorize('add products');
         $categories = Category::all();
         return view("content.apps.app-ecommerce-product-add" , compact('categories'));
     }
@@ -29,6 +34,7 @@ class ProductController extends Controller
     // Add a product
     public function add(Request $request)
     {
+        $this->authorize('add products');
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'productTitle' => 'required|string|max:255',
@@ -72,6 +78,7 @@ class ProductController extends Controller
 
     public function edit(Request $request, $id)
 {
+    $this->authorize('edit products');
     // Validate the request data
     $validator = Validator::make($request->all(), [
         'productTitle' => 'required|string|max:255',
@@ -123,6 +130,7 @@ class ProductController extends Controller
 
 public function delete(Request $request)
 {
+    $this->authorize('delete products');
     $id = $request->query('id');
     $product = Product::find($id); 
     if ($product) {

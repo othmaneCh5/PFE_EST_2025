@@ -9,255 +9,120 @@
           <p>Set role permissions</p>
         </div>
         <!-- Add role form -->
-        <form id="addRoleForm" class="row g-6" onsubmit="return false">
+        <form id="addRoleForm" class="row g-6" method="POST" action="/add_role">
+          @csrf
           <div class="col-12">
             <label class="form-label" for="modalRoleName">Role Name</label>
-            <input type="text" id="modalRoleName" name="modalRoleName" class="form-control" placeholder="Enter a role name" tabindex="-1" />
+            <input type="text" id="modalRoleName" name="name" class="form-control" placeholder="Enter a role name" />
           </div>
           <div class="col-12">
             <h5 class="mb-6">Role Permissions</h5>
             <!-- Permission table -->
             <div class="table-responsive">
               <table class="table table-flush-spacing">
+                <thead>
+                  <tr>
+                    <th colspan="2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
+                        <label class="form-check-label fw-bold" for="selectAllPermissions">Select All (Administrator Access)</label>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
                 <tbody>
                   <tr>
-                    <td class="text-nowrap fw-medium text-heading">Administrator Access <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i></td>
+                    <td class="text-nowrap fw-medium text-heading">Users Management</td>
                     <td>
                       <div class="d-flex justify-content-end">
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="viewUsers" name="permissions[]" value="view users" />
+                          <label class="form-check-label" for="viewUsers">View</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="editUsers" name="permissions[]" value="edit users" />
+                          <label class="form-check-label" for="editUsers">Edit</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="deleteUsers" name="permissions[]" value="delete users" />
+                          <label class="form-check-label" for="deleteUsers">Delete</label>
+                        </div>
                         <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="selectAll" />
-                          <label class="form-check-label" for="selectAll">
-                            Select All
-                          </label>
+                          <input class="form-check-input" type="checkbox" id="createUsers" name="permissions[]" value="create users" />
+                          <label class="form-check-label" for="createUsers">Create</label>
                         </div>
                       </div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">User Management</td>
+                    <tr>
+                    <td class="text-nowrap fw-medium text-heading">Products Management</td>
                     <td>
                       <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="userManagementRead" />
-                          <label class="form-check-label" for="userManagementRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="userManagementWrite" />
-                          <label class="form-check-label" for="userManagementWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="userManagementCreate" />
-                          <label class="form-check-label" for="userManagementCreate">
-                            Create
-                          </label>
-                        </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="viewproducts" name="permissions[]" value="view products" />
+                        <label class="form-check-label" for="viewproducts">View</label>
+                      </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="editproducts" name="permissions[]" value="edit products" />
+                        <label class="form-check-label" for="editproducts">Edit</label>
+                      </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="deleteproducts" name="permissions[]" value="delete products" />
+                        <label class="form-check-label" for="deleteproducts">Delete</label>
+                      </div>
+                      <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="createproducts" name="permissions[]" value="create products" />
+                        <label class="form-check-label" for="createproducts">Create</label>
+                      </div>
                       </div>
                     </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Content Management</td>
+                    </tr>
+                    <tr>
+                    <td class="text-nowrap fw-medium text-heading">categories Management</td>
                     <td>
                       <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="contentManagementRead" />
-                          <label class="form-check-label" for="contentManagementRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="contentManagementWrite" />
-                          <label class="form-check-label" for="contentManagementWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="contentManagementCreate" />
-                          <label class="form-check-label" for="contentManagementCreate">
-                            Create
-                          </label>
-                        </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="viewcategories" name="permissions[]" value="view categories" />
+                        <label class="form-check-label" for="viewcategories">View</label>
+                      </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="editcategories" name="permissions[]" value="edit categories" />
+                        <label class="form-check-label" for="editcategories">Edit</label>
+                      </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="deletecategories" name="permissions[]" value="delete categories" />
+                        <label class="form-check-label" for="deletecategories">Delete</label>
+                      </div>
+                      <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="createcategories" name="permissions[]" value="create categories" />
+                        <label class="form-check-label" for="createcategories">Create</label>
+                      </div>
                       </div>
                     </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Disputes Management</td>
+                    </tr>
+                    <tr>
+                    <td class="text-nowrap fw-medium text-heading">roles Management</td>
                     <td>
                       <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="dispManagementRead" />
-                          <label class="form-check-label" for="dispManagementRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="dispManagementWrite" />
-                          <label class="form-check-label" for="dispManagementWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="dispManagementCreate" />
-                          <label class="form-check-label" for="dispManagementCreate">
-                            Create
-                          </label>
-                        </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="viewroles" name="permissions[]" value="view roles" />
+                        <label class="form-check-label" for="viewroles">View</label>
+                      </div>
+                      <div class="form-check mb-0 me-4 me-lg-12">
+                        <input class="form-check-input" type="checkbox" id="editroles" name="permissions[]" value="edit roles" />
+                        <label class="form-check-label" for="editroles">Edit</label>
+                      </div>
+                      <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="deleteroles" name="permissions[]" value="delete roles" />
+                        <label class="form-check-label" for="deleteroles">Delete</label>
+                      </div>
+                      <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="updateroles" name="permissions[]" value="update roles" />
+                        <label class="form-check-label" for="updateroles">Update</label>
+                      </div>
                       </div>
                     </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Database Management</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="dbManagementRead" />
-                          <label class="form-check-label" for="dbManagementRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="dbManagementWrite" />
-                          <label class="form-check-label" for="dbManagementWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="dbManagementCreate" />
-                          <label class="form-check-label" for="dbManagementCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Financial Management</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="finManagementRead" />
-                          <label class="form-check-label" for="finManagementRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="finManagementWrite" />
-                          <label class="form-check-label" for="finManagementWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="finManagementCreate" />
-                          <label class="form-check-label" for="finManagementCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Reporting</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="reportingRead" />
-                          <label class="form-check-label" for="reportingRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="reportingWrite" />
-                          <label class="form-check-label" for="reportingWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="reportingCreate" />
-                          <label class="form-check-label" for="reportingCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">API Control</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="apiRead" />
-                          <label class="form-check-label" for="apiRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="apiWrite" />
-                          <label class="form-check-label" for="apiWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="apiCreate" />
-                          <label class="form-check-label" for="apiCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Repository Management</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="repoRead" />
-                          <label class="form-check-label" for="repoRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="repoWrite" />
-                          <label class="form-check-label" for="repoWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="repoCreate" />
-                          <label class="form-check-label" for="repoCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-nowrap fw-medium text-heading">Payroll</td>
-                    <td>
-                      <div class="d-flex justify-content-end">
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="payrollRead" />
-                          <label class="form-check-label" for="payrollRead">
-                            Read
-                          </label>
-                        </div>
-                        <div class="form-check mb-0 me-4 me-lg-12">
-                          <input class="form-check-input" type="checkbox" id="payrollWrite" />
-                          <label class="form-check-label" for="payrollWrite">
-                            Write
-                          </label>
-                        </div>
-                        <div class="form-check mb-0">
-                          <input class="form-check-input" type="checkbox" id="payrollCreate" />
-                          <label class="form-check-label" for="payrollCreate">
-                            Create
-                          </label>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                    </tr>
                 </tbody>
               </table>
             </div>
@@ -274,3 +139,10 @@
   </div>
 </div>
 <!--/ Add Role Modal -->
+
+<script>
+  document.getElementById('selectAllPermissions').addEventListener('change', function () {
+    const checkboxes = document.querySelectorAll('input[name="permissions[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+  });
+</script>
