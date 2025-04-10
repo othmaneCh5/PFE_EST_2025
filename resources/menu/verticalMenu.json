@@ -8,7 +8,7 @@
     },
     {
       "name": "Produits",
-      "icon": "menu-icon tf-icons ti ti-layout-sidebar",
+      "icon": "menu-icon ti ti-package tf-icons",
       "slug": "app-ecommerce-product",
       "permissions": [
         "view products"
@@ -22,7 +22,10 @@
         {
           "url": "/product-add",
           "name": "Add Product",
-          "slug": "app-ecommerce-product-add"
+          "slug": "app-ecommerce-product-add",
+          "permissions": [
+            "create products"
+          ]
         },
         {
           "url": "/product-categories",
@@ -114,8 +117,25 @@
           "slug": "app-access-roles"
         },
         {
-          "url": "app/access-permission",
+          "url": "/permissions",
           "name": "Permission",
+          "slug": "app-access-permission"
+        }
+      ]
+    },
+    {
+      "name": "Fournisseurs",
+      "icon": "menu-icon tf-icons ti ti-users",
+      "slug": "app-user",
+      "submenu": [
+        {
+          "url": "/fournisseurs",
+          "name": "Liste",
+          "slug": "app-access-roles"
+        },
+        {
+          "url": "/commandes-fournisseurs",
+          "name": "Commandes fournisseurs",
           "slug": "app-access-permission"
         }
       ]

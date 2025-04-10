@@ -12,6 +12,7 @@ use App\Http\Controllers\dashboard\Crm;
 use App\Http\Controllers\layouts\Blank;
 use App\Http\Controllers\layouts\Fluid;
 use App\Http\Controllers\charts\ChartJs;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\apps\InvoiceAdd;
@@ -64,6 +65,7 @@ use App\Http\Controllers\apps\UserViewSecurity;
 use App\Http\Controllers\form_elements\Editors;
 use App\Http\Controllers\form_elements\Selects;
 use App\Http\Controllers\form_elements\Sliders;
+use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\layouts\CollapsedMenu;
 use App\Http\Controllers\layouts\ContentNavbar;
 use App\Http\Controllers\layouts\WithoutNavbar;
@@ -165,7 +167,6 @@ use App\Http\Controllers\apps\EcommerceCustomerDetailsSecurity;
 use App\Http\Controllers\wizard_example\Checkout as WizardCheckout;
 use App\Http\Controllers\apps\EcommerceCustomerDetailsNotifications;
 use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
-use App\Http\Controllers\RoleController;
 
 
 //test
@@ -242,6 +243,22 @@ Route::put('/edit_user/{id}', [UserController::class, 'update'])
 Route::get('/roles', [RoleController::class, 'index'])->name('app-access-roles')->middleware('permission:view roles');
 Route::post('/add_role', [RoleController::class, 'create_role'])->name('roles.store')->middleware('permission:create roles');
 
+//permissions
+Route::get('/permissions', [PermissionsController::class, 'index'])->name('app-access-permission');
+Route::get('/permissionss' , [PermissionsController::class , 'seedPermissions']);
+
+//fournisseurs
+Route::get('/fournisseurs', [FournisseurController::class, 'index'])->name('app-fournisseurs-list');
+Route::post('/add_fournisseur', [FournisseurController::class, 'add'])->name('fournisseurs.store');
+Route::put('/edit_fournisseur/{id}', [FournisseurController::class, 'update'])->name('users.update');
+Route::get('/delete_fournisseur', [FournisseurController::class, 'delete'])->name('fournisseurs.delete');
+Route::get('/commandes-fournisseurs', [FournisseurController::class, 'open_commandes'])->name('app-ecommerce-referrals');
+Route::post('/add_order', [FournisseurController::class, 'add_order'])->name('commandes_fournisseurs.store');
+Route::get('/fournisseur/{id}/products', function ($id) {
+    return \App\Models\Product::where('fournisseur_id', $id)->get();
+});
+Route::post('/orders/{id}/confirm', [FournisseurController::class, 'confirm'])->name('orders.confirm');
+Route::post('/orders/{id}/cancel', [FournisseurController::class, 'cancel'])->name('orders.cancel');
 
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
@@ -351,7 +368,6 @@ Route::get('/app/ecommerce/customer/details/notifications', [EcommerceCustomerDe
 
 //
 Route::get('/app/ecommerce/manage/reviews', [EcommerceManageReviews::class, 'index'])->name('app-ecommerce-manage-reviews');
-Route::get('/app/ecommerce/referrals', [EcommerceReferrals::class, 'index'])->name('app-ecommerce-referrals');
 Route::get('/app/ecommerce/settings/details', [EcommerceSettingsDetails::class, 'index'])->name('app-ecommerce-settings-details');
 Route::get('/app/ecommerce/settings/payments', [EcommerceSettingsPayments::class, 'index'])->name('app-ecommerce-settings-payments');
 Route::get('/app/ecommerce/settings/checkout', [EcommerceSettingsCheckout::class, 'index'])->name('app-ecommerce-settings-checkout');
@@ -373,7 +389,6 @@ Route::get('/app/user/view/security', [UserViewSecurity::class, 'index'])->name(
 Route::get('/app/user/view/billing', [UserViewBilling::class, 'index'])->name('app-user-view-billing');
 Route::get('/app/user/view/notifications', [UserViewNotifications::class, 'index'])->name('app-user-view-notifications');
 Route::get('/app/user/view/connections', [UserViewConnections::class, 'index'])->name('app-user-view-connections');
-Route::get('/app/access-permission', [AccessPermission::class, 'index'])->name('app-access-permission');
 
 // pages
 Route::get('/pages/profile-user', [UserProfile::class, 'index'])->name('pages-profile-user');

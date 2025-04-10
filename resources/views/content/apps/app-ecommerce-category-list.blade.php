@@ -59,18 +59,19 @@
         <thead>
           <tr>
             <th></th>
-            <th>ID</th>
             <th>Categories</th>
             <th class="text-nowrap text-sm-end">Total Products</th>
             <th class="text-nowrap text-sm-end">Total Earnings</th>
-            <th class="text-lg-center">Actions</th>
+            @can('edit categories' , 'delete categories')
+              <th class="text-lg-center">Actions</th>
+            @endcan
+            
           </tr>
         </thead>
         <tbody>
           @foreach ($categories as $category)
             <tr>
               <td></td>
-              <td>{{ $category->id }}</td>
               <td>
                 <div class="d-flex align-items-center">
                   <div class="avatar-wrapper me-3 rounded-2 bg-label-secondary">
@@ -143,9 +144,17 @@
                   </button>
                   @endcan
                   @can('delete categories')
-                  <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
-                    <i class="ti ti-trash ti-md"></i> 
+                  <button 
+                      type="button" 
+                      class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#modalCenter"
+                      data-id="{{ $category->id }}" {{-- Pass the ID here --}}
+                      onclick="setDeleteId(this)"
+                    >
+                      <i class="ti ti-trash ti-md"></i> 
                   </button>
+
                   @endcan
                   
                 </div>
@@ -262,7 +271,14 @@
       </div>
     </div>
 
-
+    <script>
+      function setDeleteId(button) {
+        const id = button.getAttribute('data-id');
+        const deleteLink = document.getElementById('confirmDeleteBtn');
+        deleteLink.href = `/delete_category?id=${id}`;
+      }
+    </script>
+    
     <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -277,7 +293,7 @@
           </div> 
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-            <a href="/delete_category?id={{ $category->id }}">
+            <a id="confirmDeleteBtn" href="#">
               <button type="button" class="btn btn-primary">Yes</button>
             </a>
           </div>

@@ -34,20 +34,37 @@
 <!-- Permission Table -->
 <div class="card">
   <div class="card-datatable table-responsive">
-    <table class="datatables-permissions table border-top">
-      <thead>
-        <tr>
-          <th></th>
-          <th></th>
-          <th>Name</th>
-          <th>Assigned To</th>
-          <th>Created Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-    </table>
+      <table class="table border-top">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Assigned To</th>
+                  <th>Created Date</th>
+              </tr>
+          </thead>
+          <tbody>
+            @foreach ($permissions as $permission)
+            <tr>
+                <td>{{ $permission->name }}</td>
+                <td>
+                    @foreach ($permission->users as $user)
+                        <span class="badge bg-label-primary">{{ $user->name }}</span>
+                    @endforeach
+                    @foreach ($permission->roles as $role)
+                        @foreach ($role->users as $user)
+                            <span class="badge bg-label-secondary">{{ $user->name }} (via {{ $role->name }})</span>
+                        @endforeach
+                    @endforeach
+                </td>
+                <td>{{ $permission->created_at->format('Y-m-d') }}</td>
+            </tr>
+        @endforeach
+        
+          </tbody>
+      </table>
   </div>
 </div>
+
 <!--/ Permission Table -->
 
 <!-- Modal -->

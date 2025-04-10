@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -26,23 +27,25 @@ class ProductController extends Controller
     // Open the add product page
     public function open_add_product()
     {
-        $this->authorize('add products');
+        $this->authorize('create products');
         $categories = Category::all();
-        return view("content.apps.app-ecommerce-product-add" , compact('categories'));
+        $fournisseurs = Fournisseur::all();
+        return view("content.apps.app-ecommerce-product-add" , compact('categories' , 'fournisseurs'));
     }
 
     // Add a product
     public function add(Request $request)
     {
-        $this->authorize('add products');
+        $this->authorize('create products');
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'productTitle' => 'required|string|max:255',
             'description' => 'string|max:255',
-            'productSku' => 'required|string|unique:products,sku',
+            'quantity' => 'required|numeric|min:0',
             'productBarcode' => 'required|string|unique:products,barcode',
             'productPrice' => 'required|numeric|min:0',
-            'category' => 'nullable|exists:categories,id', // Category is optional
+            'category' => 'nullable|exists:categories,id',
+            'fournisseur' => 'nullable|exists:fournisseurs,id', // Category is optional
             'status' => 'required|in:Publié,Planifié,Inactif',
             'file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image is optional
         ]);
@@ -64,10 +67,11 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $request->input('productTitle'),
             'description' => $request->input('description'),
-            'sku' => $request->input('productSku'),
+            'quantity' => $request->input('quantity'),
             'barcode' => $request->input('productBarcode'),
             'price' => $request->input('productPrice'),
-            'category_id' => $request->input('category'), // This can be null
+            'category_id' => $request->input('category'),
+            'fournisseur_id' => $request->input('fournisseur'), // This can be null
             'status' => $request->input('status'),
             'image' => $imagePath, // This can be null
         ]);
@@ -82,9 +86,9 @@ class ProductController extends Controller
     // Validate the request data
     $validator = Validator::make($request->all(), [
         'productTitle' => 'required|string|max:255',
-        'description' => 'nullable|string|max:255', // Make description optional
-        'productSku' => 'required|string|unique:products,sku,' . $id, // Ignore the current product's SKU
-        'productBarcode' => 'required|string|unique:products,barcode,' . $id, // Ignore the current product's barcode
+        'description' => 'string|max:255',
+        'quantity' => 'required|numeric|min:0',
+        'productBarcode' => 'required|string|unique:products,barcode,' . $id,
         'productPrice' => 'required|numeric|min:0',
         'category' => 'nullable|exists:categories,id', // Category is optional
         'status' => 'required|in:Publié,Planifié,Inactif',
@@ -116,7 +120,7 @@ class ProductController extends Controller
     $product->update([
         'name' => $request->input('productTitle'),
         'description' => $request->input('description'),
-        'sku' => $request->input('productSku'),
+        'quantity' => $request->input('quantity'),
         'barcode' => $request->input('productBarcode'),
         'price' => $request->input('productPrice'),
         'category_id' => $request->input('category'), // This can be null

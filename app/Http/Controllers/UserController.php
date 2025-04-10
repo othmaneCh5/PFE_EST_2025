@@ -29,7 +29,7 @@ class UserController extends Controller
             'password' => 'required|string|max:255',
             'profile_photo_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'nullable',
-            'phone_number' => 'required|string|unique:products,sku',
+            'phone_number' => 'required|string',
             'dob' => 'required|date|before:today',
         ]);
 
@@ -66,12 +66,10 @@ class UserController extends Controller
     public function update(Request $request, $id)
 {
     $this->authorize('edit users');
-    // Debugging: Check incoming request data
-    // This will dump all request data and stop execution
-
+   
     $user = User::findOrFail($id);
 
-    // Debugging: Check if user is found
+   
     if (!$user) {
         return response()->json(['error' => 'User not found'], 404);
     }
@@ -97,12 +95,7 @@ class UserController extends Controller
             ->withInput();
     }
 
-    // Debugging: Check if image file is present
-    if ($request->hasFile('profile_photo_path')) {
-        dd('Profile photo detected');
-    }
-
-    // Handle the image upload (if provided)
+   
     $imagePath = $user->profile_photo_path;
     if ($request->hasFile('profile_photo_path')) {
         // Delete old image if it exists
@@ -137,7 +130,13 @@ class UserController extends Controller
 
     // Debugging: Confirm user updated
   
-
+    if ($request->filled('role')) {  // Check if a new role was selected
+        $role = Role::find($request->role);  // Use the correct key "role"
+        
+        if ($role) { // Only update if role exists
+            $user->syncRoles([$role]); 
+        }
+    }
     // Redirect with success message
     return redirect()->route('app-user-list')->with('success', 'User updated successfully!');
 }

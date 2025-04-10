@@ -13,6 +13,7 @@
 
 @section('vendor-script')
 @vite([
+  'resources/assets/vendor/libs/jquery/jquery.js',
   'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
   'resources/assets/vendor/libs/select2/select2.js'
 ])
@@ -27,86 +28,42 @@
 @section('content')
 <!-- Product List Widget -->
 
-<div class="card mb-6">
-  <div class="card-widget-separator-wrapper">
-    <div class="card-body card-widget-separator">
-      <div class="row gy-4 gy-sm-1">
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-4 pb-sm-0">
-            <div>
-              <p class="mb-1">In-store Sales</p>
-              <h4 class="mb-1">$5,345.43</h4>
-              <p class="mb-0"><span class="me-2">5k orders</span><span class="badge bg-label-success">+5.7%</span></p>
-            </div>
-            <span class="avatar me-sm-6">
-              <span class="avatar-initial rounded"><i class="ti-28px ti ti-smart-home text-heading"></i></span>
-            </span>
-          </div>
-          <hr class="d-none d-sm-block d-lg-none me-6">
-        </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-4 pb-sm-0">
-            <div>
-              <p class="mb-1">Website Sales</p>
-              <h4 class="mb-1">$674,347.12</h4>
-              <p class="mb-0"><span class="me-2">21k orders</span><span class="badge bg-label-success">+12.4%</span></p>
-            </div>
-            <span class="avatar p-2 me-lg-6">
-              <span class="avatar-initial rounded"><i class="ti-28px ti ti-device-laptop text-heading"></i></span>
-            </span>
-          </div>
-          <hr class="d-none d-sm-block d-lg-none">
-        </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start border-end pb-4 pb-sm-0 card-widget-3">
-            <div>
-              <p class="mb-1">Discount</p>
-              <h4 class="mb-1">$14,235.12</h4>
-              <p class="mb-0">6k orders</p>
-            </div>
-            <span class="avatar p-2 me-sm-6">
-              <span class="avatar-initial rounded"><i class="ti-28px ti ti-gift text-heading"></i></span>
-            </span>
-          </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <p class="mb-1">Affiliate</p>
-              <h4 class="mb-1">$8,345.23</h4>
-              <p class="mb-0"><span class="me-2">150 orders</span><span class="badge bg-label-danger">-3.5%</span></p>
-            </div>
-            <span class="avatar p-2">
-              <span class="avatar-initial rounded"><i class="ti-28px ti ti-wallet text-heading"></i></span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- Product List Table -->
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="card-title">Products</h5>
-    {{-- <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
-      <div class="col-md-4 product_status"></div>
-      <div class="col-md-4 product_category"></div>
-      <div class="col-md-4 product_stock"></div>
-    </div> --}}
+  <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+    <h5 class="card-title m-0">Products</h5>
+
+    
+        <!-- Search Input -->
+
+
+        <!-- Filter Dropdown -->
+        <div style="position: relative;">
+          <select id="category-filter" class="form-select"
+                  style="position: absolute; top: 65px; left: 30px; width: 200px; font-size: 14px; z-index: 1050;">
+            <option value="">All Categories</option>
+            @foreach ($categories as $category)
+              <option value="{{ strtolower($category->name) }}">{{ $category->name }}</option>
+            @endforeach
+          </select>  
+        </div>
+        
+
+
+
     @can('create products')
         <a href="/product-add">
-      <button type="button" class="btn btn-primary" > 
-      <i class="ti ti-plus me-1"></i> Add Product
-      </button>
+            <button type="button" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i> Add Product
+            </button>
         </a>
     @endcan
-    
-    
-  </div>
+</div>
+
   <div class="card-datatable table-responsive">
-    <table class="datatables-products table">
+    <table id="tab" class="datatables-products table">
         <thead class="border-top">
             <tr>
                 <th></th>
@@ -114,7 +71,6 @@
                 <th>Product</th>
                 <th>Category</th>
                 <th>Stock</th>
-                <th>SKU</th>
                 <th>Price</th>
                 <th>Qty</th>
                 <th>Status</th>
@@ -140,7 +96,22 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-column">
-                                <h6 class="text-nowrap mb-0">{{ $product->name }}</h6>
+                              <h6 class="text-nowrap mb-0">
+                                <a href="javascript:void(0);"
+                                onclick="openProductModal({
+                                  name: '{{ addslashes($product->name) }}',
+                                  description: '{{ addslashes($product->description) }}',
+                                  price: '{{ $product->price }}',
+                                  category: '{{ addslashes($product->category->name ?? 'Uncategorized') }}',
+                                  created_at: '{{ $product->created_at }}',
+                                  image: '{{ asset('storage/' . $product->image) }}'
+                                })"
+                                style="color: inherit; text-decoration: none; cursor: pointer;">
+                                {{ $product->name }}
+                              </a>
+
+                              </h6>
+                              
                                 <small class="text-truncate d-none d-sm-block">{{ $product->description }}</small> <!-- Replace with actual brand if available -->
                             </div>
                         </div>
@@ -152,7 +123,7 @@
                     </td>
                     <td>
                         <span class="text-truncate">
-                            @if ($product->stock > 0)
+                            @if ($product->quantity > 0)
                                 <label class="switch switch-primary switch-sm">
                                     <input type="checkbox" class="switch-input" checked="">
                                     <span class="switch-toggle-slider">
@@ -169,9 +140,9 @@
                             @endif
                         </span>
                     </td>
-                    <td>{{ $product->sku }}</td>
                     <td>{{ $product->price }}</td>
-                    <td>{{ $product->stock }}</td>
+                    
+                    <td>{{ $product->quantity}}</td>
                     <td>
                         @if ($product->status === 'Publié')
                             <span class="badge bg-label-success">Publish</span>
@@ -190,7 +161,7 @@
                           const productId = button.getAttribute('data-product-id');
                           const productName = button.getAttribute('data-product-name');
                           const productDescription = button.getAttribute('data-product-description');
-                          const productSku = button.getAttribute('data-product-sku');
+                          const productQuantity = button.getAttribute('data-product-quantity');
                           const productBarcode = button.getAttribute('data-product-barcode');
                           const productPrice = button.getAttribute('data-product-price');
                           const productCategoryId = button.getAttribute('data-product-category-id');
@@ -204,7 +175,7 @@
                           // Populate the form fields
                           document.getElementById('edit-product-name').value = productName;
                           document.getElementById('edit-product-description').value = productDescription;
-                          document.getElementById('edit-product-sku').value = productSku;
+                          document.getElementById('edit-product-quantity').value = productQuantity;
                           document.getElementById('edit-product-barcode').value = productBarcode;
                           document.getElementById('edit-product-price').value = productPrice;
                           document.getElementById('edit-product-category').value = productCategoryId;
@@ -232,7 +203,7 @@
                             data-product-id="{{ $product->id }}"
                             data-product-name="{{ $product->name }}"
                             data-product-description="{{ $product->description }}"
-                            data-product-sku="{{ $product->sku }}"
+                            data-product-quantity="{{ $product->quantity }}"
                             data-product-barcode="{{ $product->barcode }}"
                             data-product-price="{{ $product->price }}"
                             data-product-category-id="{{ $product->category_id }}"
@@ -245,43 +216,59 @@
                           
                           <script>
                             function deleteItem(itemId) {
-  // Confirm before deleting (optional)
-  if (!confirm("Are you sure you want to delete this item?")) {
-    return;
-  }
+                            // Confirm before deleting (optional)
+                            if (!confirm("Are you sure you want to delete this item?")) {
+                              return;
+                            }
 
-  // Send an AJAX request to your backend
-  fetch(`/delete_product/${itemId}`, {
-    method: 'POST', // or 'POST' depending on your backend
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content // Add CSRF token if needed
-    }
-  })
-  .then(response => {
-    if (response.ok) {
-      // Handle success (e.g., show a message or reload the page)
-      alert("Item deleted successfully!");
-      window.location.reload(); // Reload the page or update the UI dynamically
-    } else {
-      // Handle error
-      alert("Failed to delete the item.");
-    }
-  })
-  .catch(error => {
-    console.error("Error:", error);
-  });
-}
+                            // Send an AJAX request to your backend
+                            fetch(`/delete_product/${itemId}`, {
+                              method: 'POST', // or 'POST' depending on your backend
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content // Add CSRF token if needed
+                              }
+                            })
+                            .then(response => {
+                              if (response.ok) {
+                                // Handle success (e.g., show a message or reload the page)
+                                alert("Item deleted successfully!");
+                                window.location.reload(); // Reload the page or update the UI dynamically
+                              } else {
+                                // Handle error
+                                alert("Failed to delete the item.");
+                              }
+                            })
+                            .catch(error => {
+                              console.error("Error:", error);
+                            });
+                          }
+
+                          function openProductModal(product) {
+                                document.getElementById('view-product-name').textContent = product.name;
+                                document.getElementById('view-product-description').textContent = product.description;
+                                document.getElementById('view-product-price').textContent = product.price + ' MAD';
+                                document.getElementById('view-product-category').textContent = product.category;
+                                document.getElementById('view-product-date').textContent = new Date(product.created_at).toLocaleDateString();
+                                document.getElementById('view-product-image').src = product.image;
+
+                                // Show modal
+                                let modal = new bootstrap.Modal(document.getElementById('viewProductModal'));
+                                modal.show();
+                              }
                           </script>
                           @can('delete products')
-                              <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
-                                  <i class="ti ti-trash ti-md"></i> 
-                              </button>
-                          @endcan
-                            
-                          
-                            
-                            
+                          <button 
+                          type="button" 
+                          class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modalCenter"
+                          data-id="{{ $product->id }}" {{-- Pass the ID here --}}
+                          onclick="setDeleteId(this)"
+                        >
+                          <i class="ti ti-trash ti-md"></i> 
+                      </button>
+                          @endcan   
                         </div>
                     </td>
                 </tr>
@@ -290,6 +277,51 @@
     </table>
 </div>
 </div>
+
+<!-- View Product Modal -->
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- modal-lg for wider view -->
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title">Product Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-4 align-items-center">
+          <!-- Product Image -->
+          <div class="col-md-4 text-center">
+            <img id="view-product-image" src="" alt="Product Image" class="img-fluid rounded shadow-sm border" style="max-height: 220px;">
+          </div>
+
+          <!-- Product Info -->
+          <div class="col-md-8">
+            <h4 id="view-product-name" class="fw-bold mb-1">Product Name</h4>
+            <p id="view-product-description" class="text-muted mb-3">Description will appear here...</p>
+            
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <strong>Price:</strong> <span id="view-product-price" class="text-primary fw-bold"></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <strong>Category:</strong> <span id="view-product-category"></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <strong>Created at:</strong> <span id="view-product-date"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer ">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <!-- Single Edit Product Modal -->
@@ -321,8 +353,8 @@
 
           <!-- SKU -->
           <div class="mb-3">
-            <label for="edit-product-sku" class="form-label">SKU</label>
-            <input type="text" class="form-control" id="edit-product-sku" name="productSku" required>
+            <label class="form-label" for="ecommerce-product-qty">Quantity</label>
+            <input type="number" class="form-control" id="edit-product-quantity" placeholder="Qty" name="quantity" aria-label="Product quantity" required>
           </div>
 
           <!-- Barcode -->
@@ -376,6 +408,14 @@
   </div>
 </div>
 
+<script>
+  function setDeleteId(button) {
+    const id = button.getAttribute('data-id');
+    const deleteLink = document.getElementById('confirmDeleteBtn');
+    deleteLink.href = `/delete_product?id=${id}`;
+  }
+</script>
+
  <!-- Modal -->
  <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -391,7 +431,7 @@
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/delete_product?id={{ $product->id }}">
+        <a id="confirmDeleteBtn" href="#">
           <button type="button" class="btn btn-primary">Yes</button>
         </a>
       </div>
@@ -399,5 +439,25 @@
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      if (typeof jQuery === 'undefined') return;
+  
+      const table = $('.datatables-products').DataTable({
+          searchDelay: 0,    
+          minLength: 0      
+      });
+      $('#product-search').on('input', function() {
+    clearTimeout(table.searchTimer);
+    table.searchTimer = setTimeout(() => {
+        table.column(2).search(this.value).draw();
+    }, 100); 
+});
+$('#category-filter').on('change', function() {
+        const dt = $('.datatables-products').DataTable();
+        dt.column(3).search(this.value || '').draw();
+    });
+  });
+  </script>
 
 @endsection

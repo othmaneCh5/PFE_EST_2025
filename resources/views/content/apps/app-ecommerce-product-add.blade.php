@@ -60,18 +60,18 @@
                       </div>
                       <div class="row mb-6">
                           <div class="col">
-                              <label class="form-label" for="ecommerce-product-sku">SKU</label>
-                              <input type="text" class="form-control" id="ecommerce-product-sku" placeholder="SKU" name="productSku" aria-label="Product SKU" required>
+                              <label class="form-label" for="ecommerce-product-qty">Quantity</label>
+                              <input type="number" class="form-control" id="ecommerce-product-qty" placeholder="Qty" name="quantity" aria-label="Product quantity" required>
                           </div>
                           <div class="col">
                               <label class="form-label" for="ecommerce-product-barcode">Barcode</label>
-                              <input type="text" class="form-control" id="ecommerce-product-barcode" placeholder="0123-4567" name="productBarcode" aria-label="Product barcode" required>
+                              <input type="text" class="form-control" id="ecommerce-product-barcode" placeholder="0123-4567" name="productBarcode" aria-label="Product barcode"  required>
                           </div>
                       </div>
                       <!-- Description -->
                       <div>
                           <label class="mb-1">Description (Optional)</label>
-                          <textarea class="form-control" name="description" id="ecommerce-category-description" rows="4" style="min-height: 180px;"></textarea>
+                          <textarea class="form-control" name="description" id="ecommerce-category-description" rows="4" style="min-height: 271px;"></textarea>
                       </div>
                   </div>
               </div>
@@ -109,7 +109,7 @@
               <!-- Pricing Card -->
               <div class="card mb-6">
                   <div class="card-header">
-                      <h5 class="card-title mb-0">Pricing</h5>
+                      <h5 class="card-title mb-0">Pricing & Fournisseur</h5>
                   </div>
                   <div class="card-body">
                       <!-- Base Price -->
@@ -117,7 +117,19 @@
                           <label class="form-label" for="ecommerce-product-price">Base Price</label>
                           <input type="number" class="form-control" id="ecommerce-product-price" placeholder="Price" name="productPrice" aria-label="Product price" required>
                       </div>
+                       <div class="mb-6 col ecommerce-select2-dropdown">
+                    <label class="form-label mb-1" for="category-org">
+                        <span>Fournisseur</span>
+                    </label>
+                    <select name="fournisseur" id="category-org" class="select2 form-select" data-placeholder="Select Category">
+                        <option value="">Select Fournisseur</option>
+                        @foreach($fournisseurs as $fournisseur)
+                            <option value="{{ $fournisseur->id }}">{{ $fournisseur->name }}</option>
+                        @endforeach 
+                    </select>
+                </div>
                   </div>
+                 
               </div>
               <div class="card mb-6">
                   <div class="card-header">

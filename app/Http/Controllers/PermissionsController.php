@@ -25,4 +25,10 @@ class PermissionsController extends Controller
 
         return response()->json(['message' => 'Permissions seeded successfully']);
     }
+
+    public function index()
+  {
+    $permissions = Permission::with(['users', 'roles.users'])->get();
+    return view('content.apps.app-access-permission', compact('permissions'));
+  }
 }

@@ -22,9 +22,9 @@ $(function () {
   // 2) Define status/payment style objects
   //-------------------------------------------------------
   const statusObj = {
-    'initiée':   { title: 'Initiée', class: 'bg-label-warning' },
-    'en cours':  { title: 'En cours', class: 'bg-label-info' },
-    'terminée':  { title: 'Terminée', class: 'bg-label-success' }
+    initiée: { title: 'Initiée', class: 'bg-label-warning' },
+    'en cours': { title: 'En cours', class: 'bg-label-info' },
+    terminée: { title: 'Terminée', class: 'bg-label-success' }
   };
 
   const paymentObj = {
@@ -128,7 +128,7 @@ $(function () {
         // 5) Paiement
         {
           targets: 5,
-          render: (data) => {
+          render: data => {
             let badgeClass = 'text-warning';
             if (data.toLowerCase() === 'payé') badgeClass = 'text-success';
             else if (data.toLowerCase() === 'échoué') badgeClass = 'text-danger';
@@ -273,8 +273,8 @@ $(function () {
   // 5) Create vs. Update
   //-------------------------------------------------------
   const offcanvasEl = $('#offcanvasEcommerceOrderAdd');
-  const formEl      = $('#eCommerceOrderAddForm');
-  const submitBtn   = $('#orderSubmitBtn');
+  const formEl = $('#eCommerceOrderAddForm');
+  const submitBtn = $('#orderSubmitBtn');
 
   submitBtn.on('click', function () {
     const existingId = formEl.attr('data-id') || null;
@@ -283,9 +283,9 @@ $(function () {
     const payload = {
       _token: $('meta[name="csrf-token"]').attr('content'),
       client_id: $('#ecommerce-order-add-client').val(),
-      paiement:  $('input[name="paiement"]:checked').val(),
-      status:    $('input[name="status"]:checked').val(),
-      methode:   $('input[name="methode"]:checked').val()
+      paiement: $('input[name="paiement"]:checked').val(),
+      status: $('input[name="status"]:checked').val(),
+      methode: $('input[name="methode"]:checked').val()
     };
 
     let url = '/app/ecommerce/commande';

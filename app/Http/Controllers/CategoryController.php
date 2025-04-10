@@ -20,16 +20,19 @@ class CategoryController extends Controller
 
   public function add(Request $request)
     {
-        $this->authorize('add categories');
+        $this->authorize('create categories');
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'string|max:255',
             'parent_id' => 'nullable|exists:categories,id', // Category is optional
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image is optional
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:35240', // Allow up to 5MB
+ // Image is optional
         ]);
 
         // If validation fails, redirect back with errors
         if ($validator->fails()) {
+           
+            dd($validator->errors()->all());
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();

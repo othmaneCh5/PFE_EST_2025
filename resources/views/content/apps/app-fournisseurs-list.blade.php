@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'User List - Pages')
+@section('title', 'Fournisseurs List - Pages')
 
 @section('vendor-style')
 @vite([
@@ -25,9 +25,7 @@
 ])
 @endsection
 
-@section('page-script')
-@vite('resources/assets/js/app-user-list.js')
-@endsection
+
 
 @section('content')
 
@@ -121,15 +119,15 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="card-title">Users</h5>
-    @can('create users')
+    
         <button 
       type="button" 
       class="btn btn-primary" 
       data-bs-toggle="modal" 
       data-bs-target="#largeModal"> 
-      <i class="ti ti-plus me-1"></i> Add User
+      <i class="ti ti-plus me-1"></i> Add Fournisseur
       </button>
-    @endcan
+    
       
   </div>
   
@@ -140,30 +138,26 @@
     <table class="datatables-users table">
         <thead class="border-top">
             <tr>
-                <th>User</th>
-                <th>Role</th>
+                <th>Fournisseur</th>
                 <th>Phone number</th>
-                <th>Date f birth</th>
-                <th>Status</th>
-                @canany(['edit users', 'delete users'])
-                  <th>Actions</th>
-                @endcanany
+                <th>Address</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $user)
+            @foreach ($fournisseurs as $fournisseur)
                 <tr>
                     <td>
-                        <div class="d-flex justify-content-start align-items-center user-name">
+                        <div class="d-flex justify-content-start align-items-center fournisseur-name">
                             <div class="avatar-wrapper">
                                 <div class="avatar avatar-sm me-4">
-                                    @if ($user->profile_photo_path)
-                                        <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="Avatar" class="rounded-circle">
+                                    @if ($fournisseur->profile_photo_path)
+                                        <img src="{{ asset('storage/' . $fournisseur->profile_photo_path) }}" alt="Avatar" class="rounded-circle">
                                     @else
                                         @php
                                             $states = ['success', 'danger', 'warning', 'info', 'primary', 'secondary'];
                                             $state = $states[array_rand($states)];
-                                            $initials = implode('', array_map(fn($word) => strtoupper(substr($word, 0, 1)), explode(' ', $user->name)));
+                                            $initials = implode('', array_map(fn($word) => strtoupper(substr($word, 0, 1)), explode(' ', $fournisseur->name)));
                                         @endphp
                                         <span class="avatar-initial rounded-circle bg-label-{{ $state }}">{{ $initials }}</span>
                                     @endif
@@ -171,32 +165,28 @@
                             </div>
                             <div class="d-flex flex-column">
                                 {{-- <a href="{{ route('app-user-view', $user->id) }}" class="text-heading text-truncate"> --}}
-                                    <span class="fw-medium">{{ $user->name }}</span>
+                                    <span class="fw-medium">{{ $fournisseur->name }}</span>
                                 {{-- </a> --}}
-                                <small>{{ $user->email }}</small>
+                                <small>{{ $fournisseur->email }}</small>
                             </div>
                         </div>
                     </td>
-                    <td>
+                    {{-- <td>
                         <span  class="text-truncate d-flex align-items-center text-heading">
-                          @if ($user->roles->first())
-                          @if ($user->roles->first()->name == 'adminastrator')
+                            @if ($user->roles->first()->name == 'adminastrator')
                               <span class="badge bg-danger bg-glow">adminastrator</span>
-                          @else
+                            @else
                               <span class="badge bg-warning bg-glow">{{ $user->roles->first()->name }}</span>
-                          @endif
-                      @else
-                          <span class="badge bg-secondary bg-glow">No Role</span>
-                      @endif
+                            @endif
                         </span>
+                    </td> --}}
+                    <td>
+                        <span class="text-heading">{{ $fournisseur->phone }}</span>
                     </td>
                     <td>
-                        <span class="text-heading">{{ $user->phone_number }}</span>
+                        <span class="text-heading">{{ $fournisseur->address }}</span>
                     </td>
-                    <td>
-                        <span class="text-heading">{{ $user->dob }}</span>
-                    </td>
-                    <td>
+                    {{-- <td>
                         @php
                             $statusObj = [
                                 1 => ['title' => 'Pending', 'class' => 'bg-label-warning'],
@@ -206,40 +196,27 @@
                             $status = $statusObj[$user->status] ?? ['title' => 'Unknown', 'class' => 'bg-label-secondary'];
                         @endphp
                         <span class="badge {{ $status['class'] }}" text-capitalized>{{ $status['title'] }}</span>
-                    </td>
+                    </td> --}}
                     <td>
                         <div class="d-flex align-items-center">
-                      @can('edit categories')
                         <button  
                             class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light edit-user-btn"
                             data-bs-toggle="modal" 
                             data-bs-target="#editUserModal"
-                            data-user-id="{{ $user->id }}"
-                            data-user-name="{{ $user->name }}"
-                            data-user-email="{{ $user->email }}"
-                            data-user-phone="{{ $user->phone_number }}"
-                            data-user-dob="{{ $user->dob }}"
-                            data-user-status="{{ $user->status }}"
-                            data-user-role="{{ optional($user->roles->first())->name ?? 'No Role' }}"
-                            data-user-image="{{ $user->profile_photo_path }}" 
+                            data-fournisseur-id="{{ $fournisseur->id }}"
+                            data-fournisseur-name="{{ $fournisseur->name }}"
+                            data-fournisseur-email="{{ $fournisseur->email }}"
+                            data-fournisseur-phone="{{ $fournisseur->phone }}"
+                            data-fournisseur-address="{{ $fournisseur->address }}"
                           >
                             <i class="ti ti-edit ti-md"></i>
                          </button>
-                      @endcan
+                    
                           
-                            {{-- <a href="{{ route('app-user-view', $user->id) }}" class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"> --}}
-                                {{-- <i class="ti ti-eye ti-md"></i>
-                            </a> --}}
-                          @can('delete categories')
+                          
                             <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
                               <i class="ti ti-trash ti-md"></i> 
                             </button>
-                          @endcan
-                            
-                            {{-- <div class="dropdown-menu dropdown-menu-end m-0">
-                                <a href="javascript:;" class="dropdown-item">Edit</a>
-                                <a href="javascript:;" class="dropdown-item">Suspend</a>
-                            </div> --}}
                         </div>
                     </td>
                 </tr>
@@ -253,7 +230,7 @@
 </div>
 <div class="modal fade" id="largeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document"> 
-    <form action="/add_user" method="post" enctype="multipart/form-data">
+    <form action="/add_fournisseur" method="post">
       @csrf
       <div class="modal-content">
       <div class="modal-header">
@@ -277,46 +254,17 @@
             <input type="email" name="email" id="emailLarge" class="form-control" placeholder="xxxx@xxx.xx">
           </div>
           <div class="col mb-0">
-            <label for="dobLarge" class="form-label">DOB</label>
-            <input type="date" name="dob" id="dobLarge" class="form-control">
+            <label for="dobLarge" class="form-label">Address</label>
+            <input type="text" name="address" id="dobLarge" class="form-control">
           </div>
         </div>
-        <div class="row g-6" style="position: relative ; top:20px;">
-        <div class=" col mb-6">
-          <label for="edit-product-image" class="form-label">Product Image</label>
-          <input type="file" class="form-control" id="edit-product-image" name="profile_photo_path">
-          
-        </div>
-        <div class="mb-6 col ecommerce-select2-dropdown">
-          <label class="form-label mb-1" for="editRole">
-            <span>Role</span>
-          </label>
-          <select name="role" id="editRole" class="select2 form-select" data-placeholder="Select Role">
-            <option value="">Select Role</option>
-            
-            @foreach($roles as $role)
-              <option value="{{ $role->id }}">{{ $role->name }}</option>
-            @endforeach 
-          </select>
-        </div>
-      </div>
+        
       <div class="row g-6" style="position: relative ; top:20px;">
         <div class="col mb-6">
           <label for="nameLarge" class="form-label">Phone Number</label>
-          <input type="number" name="phone_number" id="nameLarge" class="form-control" placeholder="Enter Name">
+          <input type="number" name="phone" id="nameLarge" class="form-control" placeholder="Enter Name">
         </div>
-        <div class="mb-6 col ecommerce-select2-dropdown">
-          <label class="form-label mb-1" for="category-org">
-              <span>Status</span>
-          </label>
-          <select name="status" id="category-org" class="select2 form-select" data-placeholder="Select Category">
-              <option value="">Select Status</option>
-              <option value="hl">vdf Status</option>
-              {{-- @foreach($categories as $category) --}}
-                  {{-- <option value="{{ $category->id }}">{{ $category->name }}</option> --}}
-              {{-- @endforeach  --}}
-          </select>
-      </div>
+       
       </div>
       </div>
       <div class="modal-footer">
@@ -335,35 +283,22 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.edit-user-btn').forEach(button => {
     button.addEventListener('click', function () {
       // Get the user data from data attributes
-      const userId = button.getAttribute('data-user-id');
-      const userName = button.getAttribute('data-user-name');
-      const userEmail = button.getAttribute('data-user-email');
-      const userPhone = button.getAttribute('data-user-phone');
-      const userDob = button.getAttribute('data-user-dob');
-      const userStatus = button.getAttribute('data-user-status');
-      const userRole = button.getAttribute('data-user-role');
-      const userImage = button.getAttribute('data-user-image');
+      const fournisseurId = button.getAttribute('data-fournisseur-id');
+      const fournisseurName = button.getAttribute('data-fournisseur-name');
+      const fournisseurEmail = button.getAttribute('data-fournisseur-email');
+      const fournisseurPhone = button.getAttribute('data-fournisseur-phone');
+      const fournisseurAddress = button.getAttribute('data-fournisseur-address');
 
       // Update the form action URL
       const form = document.getElementById('editUserForm');
-      form.action = `/edit_user/${userId}`;
+      form.action = `/edit_fournisseur/${fournisseurId}`;
 
       // Populate the form fields
-      document.getElementById('editName').value = userName;
-      document.getElementById('editEmail').value = userEmail;
-      document.getElementById('editPhoneNumber').value = userPhone;
-      document.getElementById('editDob').value = userDob;
-      document.getElementById('editStatus').value = userStatus;
-      document.getElementById('editRole').value = userRole;
+      document.getElementById('editName').value = fournisseurName;
+      document.getElementById('editEmail').value = fournisseurEmail;
+      document.getElementById('editPhoneNumber').value = fournisseurPhone;
+      document.getElementById('editAddress').value = fournisseurAddress;
 
-      // Update the image preview
-      const imagePreview = document.getElementById('currentProfilePhoto');
-      if (userImage) {
-        imagePreview.src = `/storage/${userImage}`;
-        imagePreview.style.display = 'block';
-      } else {
-        imagePreview.style.display = 'none';
-      }
     });
   });
 });
@@ -397,51 +332,21 @@ document.addEventListener('DOMContentLoaded', function () {
               <input type="email" name="email" id="editEmail" class="form-control" placeholder="xxxx@xxx.xx">
             </div>
             <div class="col mb-0">
-              <label for="editDob" class="form-label">DOB</label>
-              <input type="date" name="dob" id="editDob" class="form-control">
+              <label for="editAddress" class="form-label">Address</label>
+              <input type="text" name="address" id="editAddress" class="form-control">
             </div>
           </div>
-          <div class="row g-6" style="position: relative ; top:20px;">
-            <div class="col mb-6">
-              <label for="editProfilePhoto" class="form-label">Profile Photo</label>
-              <input type="file" class="form-control" id="editProfilePhoto" name="profile_photo_path">
-              <div class="mt-2">
-                <img id="currentProfilePhoto" src="" alt="Current profile photo" style="max-width: 100px; max-height: 100px;">
-              </div>
-            </div>
-            <div class="mb-6 col ecommerce-select2-dropdown">
-              <label class="form-label mb-1" for="editRole">
-                <span>Role</span>
-              </label>
-              <select name="role" id="editRole" class="select2 form-select" data-placeholder="Select Role">
-                <option value="">Select Role</option>
-                
-                @foreach($roles as $role)
-                  <option value="{{ $role->id }}">{{ $role->name }}</option>
-                @endforeach 
-              </select>
-            </div>
-          </div>
+          
           <div class="row g-6" style="position: relative ; top:20px;">
             <div class="col mb-6">
               <label for="editPhoneNumber" class="form-label">Phone Number</label>
-              <input type="number" name="phone_number" id="editPhoneNumber" class="form-control" placeholder="Enter Phone Number">
-            </div>
-            <div class="mb-6 col ecommerce-select2-dropdown">
-              <label class="form-label mb-1" for="editStatus">
-                <span>Status</span>
-              </label>
-              <select name="status" id="editStatus" class="select2 form-select" data-placeholder="Select Status">
-                <option value="">Select Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <input type="number" name="phone" id="editPhoneNumber" class="form-control" placeholder="Enter Phone Number">
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Update User</button>
+          <button type="submit" class="btn btn-primary">Update Fournisseur</button>
         </div>
       </div>
     </form>
@@ -462,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/delete_user?id={{ $user->id }}">
+        <a href="/delete_fournisseur?id={{ $fournisseur->id }}">
           <button type="button" class="btn btn-primary">Yes</button>
         </a>
       </div>
