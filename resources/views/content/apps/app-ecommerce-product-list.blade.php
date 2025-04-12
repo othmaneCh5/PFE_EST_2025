@@ -42,7 +42,7 @@
         <!-- Filter Dropdown -->
         <div style="position: relative;">
           <select id="category-filter" class="form-select"
-                  style="position: absolute; top: 65px; left: 30px; width: 200px; font-size: 14px; z-index: 1050;">
+              style="position: absolute; top: 65px; left: 30px; width: 200px; font-size: 14px; z-index: 1050;">
             <option value="">All Categories</option>
             @foreach ($categories as $category)
               <option value="{{ strtolower($category->name) }}">{{ $category->name }}</option>
@@ -409,6 +409,18 @@
 </div>
 
 <script>
+
+const table = $('.datatables-products').DataTable({
+  searchDelay: 0,
+  minLength: 0,
+  responsive: true, // enable the responsive plugin
+  // ...you can add further custom responsive settings if needed
+});
+
+$(window).resize(function() {
+  table.responsive.recalc();
+});
+
   function setDeleteId(button) {
     const id = button.getAttribute('data-id');
     const deleteLink = document.getElementById('confirmDeleteBtn');

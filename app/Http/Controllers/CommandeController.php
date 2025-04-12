@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Commande;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CommandeController extends Controller
 {
@@ -139,8 +141,9 @@ class CommandeController extends Controller
     {
         $commande = Commande::findOrFail($commandeId);
         // fetch all products
-        $products = Product::orderBy('id')->get();
-        return view('content.apps.app-ecommerce-add-product', compact('commande','products'));
+        $categories = Category::all();        
+        $products = Product::with('category')->get();
+        return view('content.apps.app-ecommerce-add-product', compact('commande','products', 'categories'));
     }
 
     public function attachProduct(Request $request, $commandeId)
@@ -152,24 +155,88 @@ class CommandeController extends Controller
             'qte'        => 'required|integer|min:1',
         ]);
 
-        // Attach or update pivot entry
-        $commande->products()->syncWithoutDetaching([
-            $request->product_id => [
-                'qte' => $request->qte
-            ]
-        ]);
+        // Retrieve the product record
+        $product = Product::findOrFail($request->product_id);
+
+        // Check if there is enough stock
+        if ($request->qte > $product->quantity) {
+            return redirect()->back()->withErrors('Not enough quantity in stock!');
+        }
+
+        // Begin a transaction (optional, but recommended for atomic updates)
+        DB::beginTransaction();
+        try {
+            // Attach or update pivot entry
+            $commande->products()->syncWithoutDetaching([
+                $request->product_id => [
+                    'qte' => $request->qte
+                ]
+            ]);
+
+            // Reduce product stock by the quantity selected
+            $product->quantity -= $request->qte;
+            $product->save();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors('An error occurred while processing your request.');
+        }
 
         return redirect()->route('orders.show', $commandeId)
                         ->with('success', 'Produit ajouté à la commande');
     }
 
+
     public function detachProduct($commandeId, $productId)
     {
         $commande = Commande::findOrFail($commandeId);
-        $commande->products()->detach($productId);
+
+        // Retrieve the product attached to this order (with pivot data)
+        $attachedProduct = $commande->products()->where('products.id', $productId)->first();
+
+        if ($attachedProduct) {
+            // Get the previously attached quantity from the pivot table
+            $attachedQuantity = $attachedProduct->pivot->qte;
+
+            // Find the product record
+            $product = Product::findOrFail($productId);
+
+            // Begin a transaction (optional)
+            DB::beginTransaction();
+            try {
+                // Add back the quantity to the stock
+                $product->quantity += $attachedQuantity;
+                $product->save();
+
+                // Detach the product from the order
+                $commande->products()->detach($productId);
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->withErrors('An error occurred while processing your request.');
+            }
+        }
 
         return redirect()->route('orders.show', $commandeId)
                         ->with('success', 'Produit supprimé de la commande');
     }
+
+    public function confirmPayment(Request $request, $id)
+    {
+        $commande = Commande::findOrFail($id);
+
+        // Update the commande: set status to "terminée" and payment to "Payé"
+        $commande->update([
+            'status'   => 'terminée',
+            'paiement' => 'Payé'
+        ]);
+
+        // Redirect with a success message.
+        return redirect()->route('orders.show', $id)
+                        ->with('success', 'Payment confirmed successfully.');
+    }
+
 
 }

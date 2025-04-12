@@ -117,9 +117,7 @@
                   <input type="checkbox" class="form-check-input" />
                 </td>
                 <td>
-                  {{-- <img src="{{ asset('assets/img/products/' . $product->image) }}" alt="{{ $product->name }}" class="rounded-circle me-3" width="50" height="50"> --}}
-                  <img src="{{ asset('assets/img/products/woodenchair.png') }}" alt="" class="rounded-circle me-3" width="50" height="50">
-
+                  <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="50" height="50">
                  {{ $product->name }}
                 </td>
                 <td>${{ $product->price }}</td>
@@ -149,7 +147,7 @@
               return $product->price * $product->pivot->qte;
           });
 
-          $tax = $subtotal * 0.01; //  1% tax
+          $tax = $subtotal * 0.005; //  1% tax
           $total = $subtotal + $tax;
         @endphp
 
@@ -169,10 +167,10 @@
             </div>
 
             <!-- Button right under total -->
-            <a href="{{ url('/front-pages/payment') }}" class="btn btn-success">
+            <a href="{{ url('/front-pages/payment?commande='.$commande->id) }}" class="btn btn-success">
               <span class="me-2">Proceed with Payment</span>
               <i class="ti ti-arrow-right scaleX-n1-rtl"></i>
-            </a>
+            </a>            
           </div>
         </div>
 

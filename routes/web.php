@@ -340,6 +340,8 @@ Route::prefix('app/ecommerce/commande')->group(function () {
 
 });
 
+Route::post('/orders/{id}/confirm-payment', [CommandeController::class, 'confirmPayment'])->name('orders.confirmPayment');
+
 
 
 //Client

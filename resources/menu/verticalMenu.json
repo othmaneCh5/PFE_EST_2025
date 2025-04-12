@@ -43,16 +43,6 @@
           "url": "app/ecommerce/commande",
           "name": "Listes des commandes",
           "slug": "app-ecommerce-order-list"
-        },
-        {
-          "url": "app/ecommerce/order/details",
-          "name": "Info commande",
-          "slug": "app-ecommerce-order-details"
-        },
-        {
-          "url": "app/ecommerce/order/add",
-          "name": "Ajouter Commande",
-          "slug": "app-ecommerce-order-add"
         }
       ]
     },
@@ -65,32 +55,6 @@
           "url": "app/ecommerce/customer/all",
           "name": "Listes des clients",
           "slug": "app-ecommerce-customer-all"
-        },
-        {
-          "name": "Detail du client",
-          "slug": "app-ecommerce-customer-details",
-          "submenu": [
-            {
-              "url": "app/ecommerce/customer/details/overview",
-              "name": "Overview",
-              "slug": "app-ecommerce-customer-details-overview"
-            },
-            {
-              "url": "app/ecommerce/customer/details/security",
-              "name": "Security",
-              "slug": "app-ecommerce-customer-details-security"
-            },
-            {
-              "url": "app/ecommerce/customer/details/billing",
-              "name": "Address & Billing",
-              "slug": "app-ecommerce-customer-details-billing"
-            },
-            {
-              "url": "app/ecommerce/customer/details/notifications",
-              "name": "Notifications",
-              "slug": "app-ecommerce-customer-details-notifications"
-            }
-          ]
         }
       ]
     },
