@@ -29,7 +29,7 @@
 
 @section('content')
 
-<div class="row g-6 mb-6">
+{{-- <div class="row g-6 mb-6">
   <div class="col-sm-6 col-xl-3">
     <div class="card">
       <div class="card-body">
@@ -114,19 +114,21 @@
       </div>
     </div>
   </div>
-</div>
+</div> --}}
 <!-- Users List Table -->
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="card-title">Users</h5>
-    
-        <button 
+    @can('create fournisseurs')
+      <button 
       type="button" 
       class="btn btn-primary" 
       data-bs-toggle="modal" 
       data-bs-target="#largeModal"> 
       <i class="ti ti-plus me-1"></i> Add Fournisseur
       </button>
+    @endcan
+        
     
       
   </div>
@@ -141,7 +143,9 @@
                 <th>Fournisseur</th>
                 <th>Phone number</th>
                 <th>Address</th>
-                <th>Actions</th>
+                @canany(['edit users', 'delete users'])
+                  <th>Actions</th>
+                @endcanany
             </tr>
         </thead>
         <tbody>

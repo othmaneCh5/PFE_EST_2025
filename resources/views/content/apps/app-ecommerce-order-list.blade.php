@@ -128,7 +128,8 @@
   id="offcanvasEcommerceOrderAdd"
   aria-labelledby="offcanvasEcommerceOrderAddLabel"
   >
-  <div class="offcanvas-header">
+  @can('create commandes')
+    <div class="offcanvas-header">
     <h5 id="offcanvasEcommerceOrderAddLabel" class="offcanvas-title">Ajouter Commande</h5>
     <button
       type="button"
@@ -137,6 +138,8 @@
       aria-label="Close"
     ></button>
   </div>
+  @endcan
+  
 
   <div class="offcanvas-body border-top mx-0 flex-grow-0">
     {{-- Add Order Form --}}

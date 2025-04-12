@@ -6,10 +6,11 @@ use App\Models\Client;
 use App\Models\Product;
 use App\Models\Commande;
 use Illuminate\Http\Request;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class CommandeController extends Controller
 {
     public function index(){
+        $this->authorize('view commandes');
         $clients = Client::select('id', 'name', 'email')->get();
         return view('content.apps.app-ecommerce-order-list', compact('clients'));
     }
@@ -45,6 +46,7 @@ class CommandeController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create commandes');
         // Validate the incoming request.
         $request->validate([
             'client_id' => 'required|exists:clients,id',
