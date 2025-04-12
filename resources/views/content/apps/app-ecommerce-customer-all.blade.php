@@ -43,7 +43,9 @@
           <th>Email</th>
           <th>Numéro Téléphone</th>
           <th>Adresse</th>
-          <th>Actions</th>
+          @canany(['edit clients', 'delete clients'])
+                  <th>Actions</th>
+          @endcanany
         </tr>
       </thead>
     </table>

@@ -38,6 +38,9 @@
       "name": "Commandes",
       "slug": "app-ecommerce-order",
       "icon": "menu-icon tf-icons ti ti-layout-sidebar",
+      "permissions": [
+        "view commandes"
+      ],
       "submenu": [
         {
           "url": "app/ecommerce/commande",
@@ -50,6 +53,9 @@
       "name": "Clients",
       "slug": "app-ecommerce-customer",
       "icon": "menu-icon tf-icons ti ti-users",
+      "permissions": [
+        "view clients"
+      ],
       "submenu": [
         {
           "url": "app/ecommerce/customer/all",
@@ -91,6 +97,9 @@
       "name": "Fournisseurs",
       "icon": "menu-icon tf-icons ti ti-users",
       "slug": "app-user",
+      "permissions": [
+        "view fournisseurs"
+      ],
       "submenu": [
         {
           "url": "/fournisseurs",

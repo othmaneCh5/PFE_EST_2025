@@ -172,24 +172,7 @@ use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
 //test
 Route::get('/dash', [TestController::class, 'index'])->name('dashboard-test');
 
-// //products
-// Route::get('/products', [ProductController::class, 'index'])->name('product-list');
-// Route::get('/product-add', [ProductController::class, 'open_add_product'])->name('product-add');
-// Route::post('/add_product' , [ProductController::class , 'add']);
-// Route::put('/products/{id}', [ProductController::class, 'edit'])->name('products.update');
-// Route::get('/delete_product', [ProductController::class, 'delete']);
 
-// //product categories
-// Route::get('/product-categories', [CategoryController::class, 'index'])->name('product-categories');
-// Route::post('/add_category' , [CategoryController::class , 'add']);
-// Route::post('/edit_category/{id}', [CategoryController::class, 'update']);
-// Route::get('/delete_category', [CategoryController::class, 'delete']);
-
-// //users
-// Route::get('/users', [UserController::class, 'index'])->name('app-user-list');
-// Route::post('/add_user' , [UserController::class , 'add']);
-// Route::get('/delete_user' , [UserController::class , 'delete']);
-// Route::put('/edit_user/{id}', [UserController::class, 'update'])->name('users.update');
 // 📌 Products Management
 Route::get('/products', [ProductController::class, 'index'])
 ->name('product-list')
@@ -248,11 +231,11 @@ Route::get('/permissions', [PermissionsController::class, 'index'])->name('app-a
 Route::get('/permissionss' , [PermissionsController::class , 'seedPermissions']);
 
 //fournisseurs
-Route::get('/fournisseurs', [FournisseurController::class, 'index'])->name('app-fournisseurs-list');
-Route::post('/add_fournisseur', [FournisseurController::class, 'add'])->name('fournisseurs.store');
-Route::put('/edit_fournisseur/{id}', [FournisseurController::class, 'update'])->name('users.update');
-Route::get('/delete_fournisseur', [FournisseurController::class, 'delete'])->name('fournisseurs.delete');
-Route::get('/commandes-fournisseurs', [FournisseurController::class, 'open_commandes'])->name('app-ecommerce-referrals');
+Route::get('/fournisseurs', [FournisseurController::class, 'index'])->name('app-fournisseurs-list')->middleware('permission:view fournisseurs');
+Route::post('/add_fournisseur', [FournisseurController::class, 'add'])->name('fournisseurs.store')->middleware('permission:create fournisseurs');
+Route::put('/edit_fournisseur/{id}', [FournisseurController::class, 'update'])->name('users.update')->middleware('permission:edit fournisseurs');
+Route::get('/delete_fournisseur', [FournisseurController::class, 'delete'])->name('fournisseurs.delete')->middleware('permission:delete fournisseurs');
+Route::get('/commandes-fournisseurs', [FournisseurController::class, 'open_commandes'])->name('app-ecommerce-referrals')->middleware('permission:access commandes_fournisseurs');
 Route::post('/add_order', [FournisseurController::class, 'add_order'])->name('commandes_fournisseurs.store');
 Route::get('/fournisseur/{id}/products', function ($id) {
     return \App\Models\Product::where('fournisseur_id', $id)->get();
@@ -309,7 +292,7 @@ Route::prefix('app/ecommerce/commande')->group(function () {
     Route::get('/data', [CommandeController::class, 'getData'])->name('commande.data');
 
     // Create a new order.
-    Route::post('/', [CommandeController::class, 'store'])->name('commande.store');
+    Route::post('/', [CommandeController::class, 'store'])->name('commande.store')->middleware('permission:view commandes');
 
     // Retrieve an order for editing.
     Route::get('/{id}/edit', [CommandeController::class, 'edit'])->name('commande.edit');
@@ -330,7 +313,7 @@ Route::prefix('app/ecommerce/commande')->group(function () {
     Route::put('/client/{id}/update-card', [ClientController::class, 'updateCard'])->name('client.updateCard');
 
     // Show 'add product' page
-    Route::get('{commande}/add-product', [CommandeController::class, 'addProductView'])->name('commande.addProduct');
+    Route::get('{commande}/add-product', [CommandeController::class, 'addProductView'])->name('commande.addProduct')->middleware('permission:create commandes');
 
    // Attach one product to the commande
    Route::post('{commande}/attach-product', [CommandeController::class, 'attachProduct'])->name('commande.attachProduct');
@@ -347,20 +330,20 @@ Route::post('/orders/{id}/confirm-payment', [CommandeController::class, 'confirm
 //Client
 
 // Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');
-Route::get('/app/ecommerce/customer/all', [ClientController::class, 'index'])->name('app-ecommerce-customer-all');
+Route::get('/app/ecommerce/customer/all', [ClientController::class, 'index'])->name('app-ecommerce-customer-all')->middleware('permission:view clients');
 
 // DataTable JSON
-Route::get('/app/ecommerce/customers/data', [ClientController::class, 'getData'])->name('customers.data');
+Route::get('/app/ecommerce/customers/data', [ClientController::class, 'getData'])->name('customers.data')->middleware('permission:view clients');;
 
 // CREATE store
-Route::post('/app/ecommerce/customers/store', [ClientController::class, 'store'])->name('customers.store');
+Route::post('/app/ecommerce/customers/store', [ClientController::class, 'store'])->name('customers.store')->middleware('permission:create clients');;
 
 // EDIT + UPDATE
-Route::get('/app/ecommerce/customers/{id}/edit', [ClientController::class, 'edit'])->name('customers.edit');
-Route::put('/app/ecommerce/customers/{id}', [ClientController::class, 'update'])->name('customers.update');
+Route::get('/app/ecommerce/customers/{id}/edit', [ClientController::class, 'edit'])->name('customers.edit')->middleware('permission:edit clients');;
+Route::put('/app/ecommerce/customers/{id}', [ClientController::class, 'update'])->name('customers.update')->middleware('permission:edit clients');;
 
 // DELETE
-Route::delete('/app/ecommerce/customers/{id}', [ClientController::class, 'destroy'])->name('customers.destroy');
+Route::delete('/app/ecommerce/customers/{id}', [ClientController::class, 'destroy'])->name('customers.destroy')->middleware('permission:delete clients');;
 
 
 Route::get('/app/ecommerce/customer/details/overview', [EcommerceCustomerDetailsOverview::class, 'index'])->name('app-ecommerce-customer-details-overview');

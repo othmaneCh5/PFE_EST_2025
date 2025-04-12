@@ -112,17 +112,92 @@
                         <input class="form-check-input" type="checkbox" id="editroles" name="permissions[]" value="edit roles" />
                         <label class="form-check-label" for="editroles">Edit</label>
                       </div>
-                      <div class="form-check mb-0">
+                      <div class="form-check mb-0 me-4 me-lg-12">
                         <input class="form-check-input" type="checkbox" id="deleteroles" name="permissions[]" value="delete roles" />
                         <label class="form-check-label" for="deleteroles">Delete</label>
                       </div>
                       <div class="form-check mb-0">
-                        <input class="form-check-input" type="checkbox" id="updateroles" name="permissions[]" value="update roles" />
-                        <label class="form-check-label" for="updateroles">Update</label>
+                        <input class="form-check-input" type="checkbox" id="updateroles" name="permissions[]" value="create roles" />
+                        <label class="form-check-label" for="updateroles">Create</label>
                       </div>
                       </div>
                     </td>
                     </tr>
+
+                    <tr>
+                      <td class="text-nowrap fw-medium text-heading">Clients Management</td>
+                      <td>
+                        <div class="d-flex justify-content-end">
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="viewclients" name="permissions[]" value="view clients" />
+                          <label class="form-check-label" for="viewclients">View</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="editclients" name="permissions[]" value="edit clients" />
+                          <label class="form-check-label" for="editclients">Edit</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="deleteclients" name="permissions[]" value="delete clients" />
+                          <label class="form-check-label" for="deleteclients">Delete</label>
+                        </div>
+                        <div class="form-check mb-0">
+                          <input class="form-check-input" type="checkbox" id="updateclients" name="permissions[]" value="create clients" />
+                          <label class="form-check-label" for="updateclients">Create</label>
+                        </div>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="text-nowrap fw-medium text-heading">Fournisseurs Management</td>
+                      <td>
+                        <div class="d-flex justify-content-end">
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="viewfournisseurs" name="permissions[]" value="view fournisseurs" />
+                          <label class="form-check-label" for="viewfournisseurs">View</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="editfournisseurs" name="permissions[]" value="edit fournisseurs" />
+                          <label class="form-check-label" for="editfournisseurs">Edit</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-12">
+                          <input class="form-check-input" type="checkbox" id="deletefournisseurs" name="permissions[]" value="delete fournisseurs" />
+                          <label class="form-check-label" for="deletefournisseurs">Delete</label>
+                        </div>
+                        <div class="form-check mb-0">
+                          <input class="form-check-input" type="checkbox" id="updatefournisseurs" name="permissions[]" value="create fournisseurs" />
+                          <label class="form-check-label" for="updatefournisseurs">Create</label>
+                        </div>
+                        </div>
+                      </td>
+                      </tr>
+
+                    <tr>
+                      <td class="text-nowrap fw-medium text-heading">commandes Management</td>
+                      <td>
+                        <div class="d-flex justify-content-end">
+                        <div class="form-check mb-0 me-4 me-lg-9">
+                          <input class="form-check-input" type="checkbox" id="viewcommandes" name="permissions[]" value="view commandes" />
+                          <label class="form-check-label" for="viewcommandes">View</label>
+                        </div>
+                        <div class="form-check mb-0 me-4 me-lg-9">
+                          <input class="form-check-input" type="checkbox" id="editcommandes" name="permissions[]" value="create commandes" />
+                          <label class="form-check-label" for="editcommandes">Create</label>
+                        </div>
+                        </div>
+                      </td>
+                      </tr>
+                      <tr>
+                        <td class="text-nowrap fw-medium text-heading">commandes fournisseurs</td>
+                        <td>
+                          <div class="d-flex justify-content-end">
+                          <div class="form-check mb-0 me-4 me-lg-12">
+                            <input class="form-check-input" type="checkbox" id="viewroles" name="permissions[]" value="access commandes_fournisseurs" />
+                            <label class="form-check-label" for="viewroles">Access</label>
+                          </div>
+                          </div>
+                        </td>
+                        </tr>
                 </tbody>
               </table>
             </div>

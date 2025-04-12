@@ -7,16 +7,18 @@ use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use App\Models\FournisseurOrder;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class FournisseurController extends Controller
 {
     public function index()
     {
+        $this->authorize('view fournisseurs');
         $fournisseurs = Fournisseur::all();
         return view('content.apps.app-fournisseurs-list', compact('fournisseurs'));
     }
     public function add(Request $request)
     {
+        $this->authorize('create fournisseurs');
         $fournisseur = new Fournisseur();
         $fournisseur->name = $request->input('name');
         $fournisseur->email = $request->input('email');
@@ -29,6 +31,7 @@ class FournisseurController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('edit fournisseurs');
         $fournisseur = Fournisseur::findOrFail($id);
         $fournisseur->name = $request->input('name');
         $fournisseur->email = $request->input('email');
@@ -40,6 +43,7 @@ class FournisseurController extends Controller
     }
     public function delete(Request $request)
     {
+        $this->authorize('delete fournisseurs');
         $id = $request->query('id');
         $fournisseur = Fournisseur::findOrFail($id);
         $fournisseur->delete();
@@ -47,6 +51,7 @@ class FournisseurController extends Controller
         return redirect()->route('app-fournisseurs-list')->with('success', 'Fournisseur deleted successfully.');
     }
     public function open_commandes(){
+        $this->authorize('access commandes_fournisseurs');
         $orders = FournisseurOrder::all();
         $products = Product::all();
         $fournisseurs = Fournisseur::all();
@@ -55,6 +60,7 @@ class FournisseurController extends Controller
 
     public function add_order(Request $request)
 {
+    $this->authorize('access commandes_fournisseurs');
     // Validate the incoming request
     $request->validate([
         'fournisseur_id' => 'required|exists:fournisseurs,id',
@@ -82,6 +88,7 @@ class FournisseurController extends Controller
 
 public function confirm($id)
 {
+    $this->authorize('access commandes_fournisseurs');
     $order = FournisseurOrder::findOrFail($id);
     $order->status = "received"; // received
     $order->save();
@@ -91,6 +98,7 @@ public function confirm($id)
 
 public function cancel($id)
 {
+    $this->authorize('access commandes_fournisseurs');
     $order = FournisseurOrder::findOrFail($id);
     $order->status = "canceled"; // canceled
     $order->save();
