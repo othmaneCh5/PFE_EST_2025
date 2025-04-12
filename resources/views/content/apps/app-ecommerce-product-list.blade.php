@@ -112,7 +112,8 @@
 
                               </h6>
                               
-                                <small class="text-truncate d-none d-sm-block">{{ $product->description }}</small> <!-- Replace with actual brand if available -->
+                              <small class="text-truncate d-none d-sm-block">{{ \Illuminate\Support\Str::limit($product->description, 50, '...') }}</small>
+                              <!-- Replace with actual brand if available -->
                             </div>
                         </div>
                     </td>
@@ -379,7 +380,15 @@
               @endforeach
             </select>
           </div>
-
+          <div class="mb-3">
+            <label for="edit-product-category" class="form-label">Fournisseur</label>
+            <select class="form-select" id="edit-product-category" name="fournisseur">
+              <option value="">Select Fournisseur</option>
+              @foreach ($fournisseurs as $fournisseur)
+                <option value="{{ $fournisseur->id }}">{{ $fournisseur->name }}</option>
+              @endforeach
+            </select>
+          </div>
           <!-- Status -->
           <div class="mb-3">
             <label for="edit-product-status" class="form-label">Status</label>

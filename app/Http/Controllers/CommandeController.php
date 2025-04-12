@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sale;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Commande;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class CommandeController extends Controller
 {
+    use AuthorizesRequests;
     public function index(){
         $this->authorize('view commandes');
         $clients = Client::select('id', 'name', 'email')->get();
@@ -226,20 +229,32 @@ class CommandeController extends Controller
                         ->with('success', 'Produit supprimé de la commande');
     }
 
+
     public function confirmPayment(Request $request, $id)
     {
-        $commande = Commande::findOrFail($id);
-
-        // Update the commande: set status to "terminée" and payment to "Payé"
+        $commande = Commande::with('products')->findOrFail($id);
+    
+        // Update the commande status and payment
         $commande->update([
             'status'   => 'terminée',
             'paiement' => 'Payé'
         ]);
-
-        // Redirect with a success message.
+    
+        // Loop through products and record each sale
+        foreach ($commande->products as $product) {
+            Sale::create([
+                'commande_id' => $commande->id,
+                'product_id'  => $product->id,
+                'price'       => $product->price, // assuming your product has a `price` column
+                'quantity'    => $product->pivot->qte,
+                'sale_date'   => now(),
+            ]);
+        }
+    
         return redirect()->route('orders.show', $id)
-                        ->with('success', 'Payment confirmed successfully.');
+                         ->with('success', 'Payment confirmed and sales recorded.');
     }
+    
 
 
 }

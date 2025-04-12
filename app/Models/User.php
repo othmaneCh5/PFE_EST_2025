@@ -69,4 +69,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function fournisseur()
+{
+    return $this->hasOne(Fournisseur::class);
+}
+
 }

@@ -56,7 +56,7 @@
                         @endforeach
                     @endforeach
                 </td>
-                <td>{{ $permission->created_at->format('Y-m-d') }}</td>
+                <td>{{ $permission->created_at }}</td>
             </tr>
         @endforeach
         

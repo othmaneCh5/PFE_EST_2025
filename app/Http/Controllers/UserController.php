@@ -12,12 +12,20 @@ class UserController extends Controller
 {
     use AuthorizesRequests;
     public function index()
-  {
-    $this->authorize('view users');
-    $roles = Role::all();
-    $users = User::all();
-    return view('content.apps.app-user-list' , compact('users' , 'roles'));
-  }
+    {
+        $this->authorize('view users');
+        
+        // Get all users except those with the "fournisseur" role
+        $users = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'fournisseur');
+        })->get();
+        
+        // Get all roles (if you need them in the view)
+        $roles = Role::all();
+        
+        return view('content.apps.app-user-list', compact('users', 'roles'));
+    }
+    
 
   public function add(Request $request)
     {

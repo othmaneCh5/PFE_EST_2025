@@ -20,8 +20,9 @@ class ProductController extends Controller
     {
         $this->authorize('view products');
         $categories = Category::all();
+        $fournisseurs = Fournisseur::all();
         $products = Product::with('category')->get();
-        return view("content.apps.app-ecommerce-product-list" , compact('products' , 'categories'));
+        return view("content.apps.app-ecommerce-product-list" , compact('products' , 'categories' , 'fournisseurs'));
     }
 
     // Open the add product page
@@ -90,7 +91,8 @@ class ProductController extends Controller
         'quantity' => 'required|numeric|min:0',
         'productBarcode' => 'required|string|unique:products,barcode,' . $id,
         'productPrice' => 'required|numeric|min:0',
-        'category' => 'nullable|exists:categories,id', // Category is optional
+        'category' => 'nullable|exists:categories,id',
+        'fournisseur' => 'nullable|exists:fournisseurs,id', 
         'status' => 'required|in:Publié,Planifié,Inactif',
         'file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image is optional
     ]);
@@ -123,7 +125,8 @@ class ProductController extends Controller
         'quantity' => $request->input('quantity'),
         'barcode' => $request->input('productBarcode'),
         'price' => $request->input('productPrice'),
-        'category_id' => $request->input('category'), // This can be null
+        'category_id' => $request->input('category'),
+        'fournisseur_id' => $request->input('fournisseur'), // This can be null
         'status' => $request->input('status'),
         'image' => $imagePath, // This can be null
     ]);

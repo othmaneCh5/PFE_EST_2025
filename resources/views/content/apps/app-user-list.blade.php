@@ -180,7 +180,7 @@
                     <td>
                         <span  class="text-truncate d-flex align-items-center text-heading">
                           @if ($user->roles->first())
-                          @if ($user->roles->first()->name == 'adminastrator')
+                          @if ($user->roles->first()->name == 'administrator')
                               <span class="badge bg-danger bg-glow">adminastrator</span>
                           @else
                               <span class="badge bg-warning bg-glow">{{ $user->roles->first()->name }}</span>

@@ -19,6 +19,7 @@ use App\Http\Controllers\apps\InvoiceAdd;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\pages\UserTeams;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\apps\AccessRoles;
 use App\Http\Controllers\apps\InvoiceEdit;
 use App\Http\Controllers\apps\InvoiceList;
@@ -46,6 +47,7 @@ use App\Http\Controllers\apps\InvoicePreview;
 use App\Http\Controllers\apps\LogisticsFleet;
 use App\Http\Controllers\cards\CardAnalytics;
 use App\Http\Controllers\dashboard\Analytics;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\extended_ui\BlockUI;
 use App\Http\Controllers\front_pages\Landing;
 use App\Http\Controllers\front_pages\Payment;
@@ -170,7 +172,7 @@ use App\Http\Controllers\form_wizard\Numbered as FormWizardNumbered;
 
 
 //test
-Route::get('/dash', [TestController::class, 'index'])->name('dashboard-test');
+Route::get('/dash', [DashboardController::class, 'index'])->name('dashboard-test');
 
 
 // 📌 Products Management
@@ -235,49 +237,51 @@ Route::get('/fournisseurs', [FournisseurController::class, 'index'])->name('app-
 Route::post('/add_fournisseur', [FournisseurController::class, 'add'])->name('fournisseurs.store')->middleware('permission:create fournisseurs');
 Route::put('/edit_fournisseur/{id}', [FournisseurController::class, 'update'])->name('users.update')->middleware('permission:edit fournisseurs');
 Route::get('/delete_fournisseur', [FournisseurController::class, 'delete'])->name('fournisseurs.delete')->middleware('permission:delete fournisseurs');
-Route::get('/commandes-fournisseurs', [FournisseurController::class, 'open_commandes'])->name('app-ecommerce-referrals')->middleware('permission:access commandes_fournisseurs');
+Route::get('/commandes-fournisseurs', [FournisseurController::class, 'open_commandes'])->name('app-ecommerce-referrals');
 Route::post('/add_order', [FournisseurController::class, 'add_order'])->name('commandes_fournisseurs.store');
 Route::get('/fournisseur/{id}/products', function ($id) {
     return \App\Models\Product::where('fournisseur_id', $id)->get();
 });
 Route::post('/orders/{id}/confirm', [FournisseurController::class, 'confirm'])->name('orders.confirm');
 Route::post('/orders/{id}/cancel', [FournisseurController::class, 'cancel'])->name('orders.cancel');
+Route::post('/orders/{id}/ship', [FournisseurController::class, 'ship']);
+Route::post('/orders/{id}/reject', [FournisseurController::class, 'reject']);
+Route::get('/fournisseur/dashboard', [FournisseurController::class, 'index1'])->name('fournisseur.dashboard');
+Route::get('/fix-fournisseurs', [FournisseurController::class, 'fixFournisseursWithoutUsers']);
 
 // Main Page Route
 Route::get('/', [TestController::class, 'index1'])->name('first');
-Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
-Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 
 // layout
-Route::get('/layouts/collapsed-menu', [CollapsedMenu::class, 'index'])->name('layouts-collapsed-menu');
-Route::get('/layouts/content-navbar', [ContentNavbar::class, 'index'])->name('layouts-content-navbar');
-Route::get('/layouts/content-nav-sidebar', [ContentNavSidebar::class, 'index'])->name('layouts-content-nav-sidebar');
-Route::get('/layouts/navbar-full', [NavbarFull::class, 'index'])->name('layouts-navbar-full');
-Route::get('/layouts/navbar-full-sidebar', [NavbarFullSidebar::class, 'index'])->name('layouts-navbar-full-sidebar');
-Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('dashboard-analytics');
-Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('dashboard-analytics');
-Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
-Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
-Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
-Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
-Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
+// Route::get('/layouts/collapsed-menu', [CollapsedMenu::class, 'index'])->name('layouts-collapsed-menu');
+// Route::get('/layouts/content-navbar', [ContentNavbar::class, 'index'])->name('layouts-content-navbar');
+// Route::get('/layouts/content-nav-sidebar', [ContentNavSidebar::class, 'index'])->name('layouts-content-nav-sidebar');
+// Route::get('/layouts/navbar-full', [NavbarFull::class, 'index'])->name('layouts-navbar-full');
+// Route::get('/layouts/navbar-full-sidebar', [NavbarFullSidebar::class, 'index'])->name('layouts-navbar-full-sidebar');
+// Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('dashboard-analytics');
+// Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('dashboard-analytics');
+// Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
+// Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
+// Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
+// Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
+// Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
 // Front Pages
-Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
+// Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');
 Route::get('/front-pages/payment', [Payment::class, 'index'])->name('front-pages-payment');
 Route::get('/front-pages/checkout', [Checkout::class, 'index'])->name('front-pages-checkout');
-Route::get('/front-pages/help-center', [HelpCenter::class, 'index'])->name('front-pages-help-center');
-Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index'])->name('front-pages-help-center-article');
+// Route::get('/front-pages/help-center', [HelpCenter::class, 'index'])->name('front-pages-help-center');
+// Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index'])->name('front-pages-help-center-article');
 
 // apps
-Route::get('/app/email', [Email::class, 'index'])->name('app-email');
-Route::get('/app/chat', [Chat::class, 'index'])->name('app-chat');
-Route::get('/app/calendar', [Calendar::class, 'index'])->name('app-calendar');
-Route::get('/app/kanban', [Kanban::class, 'index'])->name('app-kanban');
-Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
+// Route::get('/app/email', [Email::class, 'index'])->name('app-email');
+// Route::get('/app/chat', [Chat::class, 'index'])->name('app-chat');
+// Route::get('/app/calendar', [Calendar::class, 'index'])->name('app-calendar');
+// Route::get('/app/kanban', [Kanban::class, 'index'])->name('app-kanban');
+// Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
 
 //Commandes 
 
@@ -344,6 +348,11 @@ Route::put('/app/ecommerce/customers/{id}', [ClientController::class, 'update'])
 
 // DELETE
 Route::delete('/app/ecommerce/customers/{id}', [ClientController::class, 'destroy'])->name('customers.destroy')->middleware('permission:delete clients');;
+
+Route::get('/sales', [SalesController::class, 'index'])->name('sales.show');
+
+
+
 
 
 Route::get('/app/ecommerce/customer/details/overview', [EcommerceCustomerDetailsOverview::class, 'index'])->name('app-ecommerce-customer-details-overview');

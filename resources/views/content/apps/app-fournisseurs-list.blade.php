@@ -175,32 +175,14 @@
                             </div>
                         </div>
                     </td>
-                    {{-- <td>
-                        <span  class="text-truncate d-flex align-items-center text-heading">
-                            @if ($user->roles->first()->name == 'adminastrator')
-                              <span class="badge bg-danger bg-glow">adminastrator</span>
-                            @else
-                              <span class="badge bg-warning bg-glow">{{ $user->roles->first()->name }}</span>
-                            @endif
-                        </span>
-                    </td> --}}
+                    
                     <td>
                         <span class="text-heading">{{ $fournisseur->phone }}</span>
                     </td>
                     <td>
                         <span class="text-heading">{{ $fournisseur->address }}</span>
                     </td>
-                    {{-- <td>
-                        @php
-                            $statusObj = [
-                                1 => ['title' => 'Pending', 'class' => 'bg-label-warning'],
-                                2 => ['title' => 'Active', 'class' => 'bg-label-success'],
-                                3 => ['title' => 'Inactive', 'class' => 'bg-label-secondary']
-                            ];
-                            $status = $statusObj[$user->status] ?? ['title' => 'Unknown', 'class' => 'bg-label-secondary'];
-                        @endphp
-                        <span class="badge {{ $status['class'] }}" text-capitalized>{{ $status['title'] }}</span>
-                    </td> --}}
+                    
                     <td>
                         <div class="d-flex align-items-center">
                         <button  
@@ -218,9 +200,16 @@
                     
                           
                           
-                            <button type="button" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light " data-bs-toggle="modal" data-bs-target="#modalCenter">
-                              <i class="ti ti-trash ti-md"></i> 
-                            </button>
+                         <button 
+                         type="button" 
+                         class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#modalCenter"
+                         data-id="{{ $fournisseur->id }}" {{-- Pass the ID here --}}
+                         onclick="setDeleteId(this)"
+                       >
+                         <i class="ti ti-trash ti-md"></i> 
+                     </button>
                         </div>
                     </td>
                 </tr>
@@ -228,7 +217,13 @@
         </tbody>
     </table>
 </div>
-
+<script>
+  function setDeleteId(button) {
+    const id = button.getAttribute('data-id');
+    const deleteLink = document.getElementById('confirmDeleteBtn');
+    deleteLink.href = `/delete_fournisseur?id=${id}`;
+  }
+</script>
 
   <!-- Offcanvas to add new user -->
 </div>
@@ -371,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/delete_fournisseur?id={{ $fournisseur->id }}">
+        <a id="confirmDeleteBtn" href="#">
           <button type="button" class="btn btn-primary">Yes</button>
         </a>
       </div>

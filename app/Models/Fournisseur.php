@@ -15,4 +15,8 @@ class Fournisseur extends Model
         'phone',
         'address',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class); // Fournisseur belongs to a User
+    }
 }

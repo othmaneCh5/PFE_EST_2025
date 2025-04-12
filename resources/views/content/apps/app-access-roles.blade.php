@@ -61,7 +61,7 @@ $configData = Helper::appClasses();
                     <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
                         @foreach ($role->users->take(4) as $user) <!-- Show up to 4 users -->
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar pull-up">
-                                <img class="rounded-circle" src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : asset('assets/img/avatars/default.png') }}" alt="Avatar">
+                                <img class="rounded-circle" src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : asset('storage/users/EBsOJ8DhABPIcKIWlra2A6kYq6qYIMQ7OaJZexND.png') }}" >
                             </li>
                         @endforeach
                     </ul>
